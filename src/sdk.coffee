@@ -1,12 +1,21 @@
+#############################
+# SoundCloud JavaScript SDK #
+#############################
+
 window.SC ||=
   options:
     site: "soundcloud.com",
-    apiHost: "http://api.soundcloud.com"
+    apiHost: "api.soundcloud.com"
   connectCallbacks: {}
   _popupWindow: undefined
   
   initialize: (options) ->
-    this.options[key] = options[key] for own key in options
+    this.options[key] = value for own key, value of options
+    this
+
+#################
+# AUTHORIZATION #
+#################
     
   connect: (options) ->
     options.client_id    ||= SC.options.client_id
@@ -61,21 +70,89 @@ window.SC ||=
   _trigger: (eventName, argument) -> 
     this.connectCallbacks[eventName](argument) if this.connectCallbacks[eventName]?
 
-  prepareStreaming: ->
-    
-    
+############################
+# STREAMING                #
+############################
+  whenStreamingReady: (callback) ->
+    if window.soundManager
+      callback()
+    else
+      soundManagerURL = "http://connect.soundcloud.dev/soundmanager2/"
+      window.SM2_DEFER = true;
+      SC.Helper.loadJavascript soundManagerURL + "soundmanager2.js", ->
+        window.soundManager = new SoundManager()
+        soundManager.url = soundManagerURL;
+        soundManager.flashVersion = 9;
+        soundManager.useFlashBlock = false;
+        soundManager.useHTML5Audio = false;
+        soundManager.beginDelayedInit()
+        soundManager.onready ->
+          callback()
+  
+  stream: (track, options={}) ->
+    trackId = SC.Helper.extractTrackId(track);
+    # track can be id, relative, absolute
+    SC.whenStreamingReady ->
+      options.id = "T" + trackId
+      #options.url = authenticateUrla
+      #options.url = "http://api.soundcloud.com/tracks/" + trackId + "/stream?client_id=YOUR_CLIENT_ID"
+      if !sound = soundManager.getSoundById(options.id)
+        sound = soundManager.createSound(options)
+      sound
+      
+############################      
+#  NETWORKING              #
+############################
+  get: (path, query, callback) ->
+    uri = this.prepareRequestURI(path, query)
+    unless callback?
+      callback = query
+      query = undefined
+    SC.Helper.JSONP.get uri, callback
     
 
-  Helper:
+  prepareRequestURI: (path, query={}) ->
+    uri = new SC.URI(path, {"decodeQuery": true})
+    
+    # shallow merge of queries
+    for own k,v of query
+      uri.query[k] = v
+    
+    # add scheme & host if relative
+    if uri.isRelative()
+      uri.host = this.options.apiHost
+      uri.scheme = "http"
+
+    # add client_id or oauth access token
+    if this.options.access_token?
+      uri.query.oauth_token = this.options.access_token
+      uri.scheme = "https"
+    else
+      uri.query.client_id    = this.options.client_id
+  
+    uri
+  
+############################   
+#  HELPER                  #
+############################
+  Helper:      
+    loadJavascript: (src, callback) ->
+      elem = document.createElement("script")
+      elem.async = true
+      elem.src = src
+      SC.Helper.attachEvent(elem, "load", callback)
+      document.body.appendChild(elem)
+      elem
+      
     openCenteredPopup: (url, width, height) ->
       left   = window.screenX + (window.outerWidth  - width)  / 2
       top    = window.screenY + (window.outerHeight - height) / 2
       window.open(url, "connectWithSoundCloud", "location=1, width=" + width + ", height=" + height + ", top="+ top +", left="+ left +", toolbar=no,scrollbars=yes")
 
     attachEvent: (element, eventName, func) ->
-      if(element.attachEvent)
+      if element.attachEvent
         element.attachEvent("on" + eventName, func)
-      else
+      else 
         element.addEventListener(eventName, func, false)
      
     JSONP:
@@ -83,62 +160,11 @@ window.SC ||=
       randomCallbackName: ->
         "CB" + parseInt Math.random() * 999999, 10
       
-      get: (url, callback) ->
-        callbackName = this.randomCallbackName()
-        scriptElement = document.createElement('script')
-        src = url + "&callback=SC.Helper.JSONP.callbacks." + callbackName
-        scriptElement.src = src
-    
-        SC.Helper.attachEvent scriptElement, "load", ->
-          document.body.removeChild(scriptElement)
-    
+      get: (uri, callback) ->
+        callbackName        = this.randomCallbackName()
+        uri.query.format = "js"
+        uri.query.callback = "SC.Helper.JSONP.callbacks." + callbackName
         SC.Helper.JSONP.callbacks[callbackName] = callback
-        document.body.appendChild(scriptElement)
-      
-    get: (options) ->
-      options.params.format = "js"
-      mergedUrl = this.mergeUrlParams(options.url, options.params)
-      SC.Helper.JSONP.get mergedUrl, options.callback
-    
-    mergeUrlParams: (url, params) ->
-      baseURL = url.split("?")[0]
-      newParams = this.parseParameters(url.toString())
-      params ||= {}
-      for own key of params
-        newParams[key] = params[key]
         
-      queryString = this.buildQueryString(newParams)
-      if queryString.length > 0
-        queryString = "?" + queryString
-      baseURL + queryString;
-    
-    scheme: (force) ->
-      (force ? "https:" : window.location.protocol) + "//"
-    
-    buildUrl: (location, params) ->
-      location + "?" + this.buildQueryString(params)
-    
-    isRelativeUrl: (url) ->
-      url[0] == "/"
-    
-    enforceHTTPS: (url) ->
-      url.replace("http:", "https:")
-    
-    buildQueryString: (params) ->
-      queryStringArray = [];
-      for own name of params
-        queryStringArray.push(name + "=" + escape(params[name]))
-      queryStringArray.join("&")
-    
-    parseParameters: (uri) -> 
-      splitted = uri.split(/[&?#]/)
-      if splitted[0].match(/^http/)
-        splitted.shift()
-    
-      obj = {};
-      for own i of splitted
-        kv = splitted[i].split("=")
-        obj[kv[0]] = unescape(kv[1]) if kv[0]
-        
-      obj
-    
+        SC.Helper.loadJavascript uri.toString(), ->
+          document.body.removeChild(this)
