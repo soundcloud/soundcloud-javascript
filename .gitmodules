@@ -1,0 +1,6 @@
+[submodule "static/soundmanager2"]
+	path = static/soundmanager2
+	url = git://github.com/scottschiller/SoundManager2.git
+[submodule "static/uri"]
+	path = static/uri
+	url = git@github.com:jwagener/uri.js.git
