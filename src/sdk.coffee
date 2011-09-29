@@ -4,7 +4,7 @@
 
 window.SC ||=
   options:
-    site: "soundcloud.com",
+    site: "soundcloud.dev",
     apiHost: "api.soundcloud.com"
   connectCallbacks: {}
   _popupWindow: undefined
@@ -12,6 +12,12 @@ window.SC ||=
   initialize: (options) ->
     this.options[key] = value for own key, value of options
     this
+
+  hostname: (subdomain) ->
+    str = ""
+    str += subdomain + "." if subdomain?
+    str += this.options.site
+    str
 
 #################
 # AUTHORIZATION #
@@ -34,7 +40,7 @@ window.SC ||=
         scope:          options.scope || ""
         display:        "popup"
   
-      url = "https://soundcloud.com/connect?" + SC.Helper.buildQueryString(params)
+      url = "https://" + this.hostname() + "/connect?" + SC.Helper.buildQueryString(params)
   
       SC._popupWindow = SC.Helper.openCenteredPopup url, 456, 510
     else
@@ -77,7 +83,7 @@ window.SC ||=
     if window.soundManager
       callback()
     else
-      soundManagerURL = "http://connect.soundcloud.dev/soundmanager2/"
+      soundManagerURL = "http://" + this.hostname("connect") + "/soundmanager2/"
       window.SM2_DEFER = true;
       SC.Helper.loadJavascript soundManagerURL + "soundmanager2.js", ->
         window.soundManager = new SoundManager()
