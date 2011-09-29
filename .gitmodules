@@ -4,3 +4,9 @@
 [submodule "static/uri"]
 	path = static/uri
 	url = git@github.com:jwagener/uri.js.git
+[submodule "static/recorder"]
+	path = static/recorder
+	url = git@github.com:jwagener/recorder.js.git
+[submodule "static/recorder.js"]
+	path = static/recorder.js
+	url = git@github.com:jwagener/recorder.js.git
