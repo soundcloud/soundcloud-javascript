@@ -5,11 +5,11 @@
 window.SC ||=
   options:
     site: "soundcloud.dev",
-    apiHost: "api.soundcloud.com"
   connectCallbacks: {}
   _popupWindow: undefined
   
-  initialize: (options) ->
+  initialize: (options={}) ->
+    this.accessToken(options["access_token"])
     this.options[key] = value for own key, value of options
     this
 
@@ -29,52 +29,58 @@ window.SC ||=
     SC.connectCallbacks.success    = options.connected
     SC.connectCallbacks.error      = options.error
     SC.connectCallbacks.general    = options.callback
-    SC.connectCallbacks.disconnect = options.disconnected
   
   
     if options.client_id && options.redirect_uri
-      params =
+      uri = new SC.URI("https://" + this.hostname() + "/connect/?")
+      uri.query = 
         client_id:      options.client_id
         redirect_uri:   options.redirect_uri
-        response_type:  options.flow == ("code" ? "code_and_token" : "token")
+        response_type:  "code_and_token"
         scope:          options.scope || ""
         display:        "popup"
-  
-      url = "https://" + this.hostname() + "/connect?" + SC.Helper.buildQueryString(params)
-  
-      SC._popupWindow = SC.Helper.openCenteredPopup url, 456, 510
+      SC._popupWindow = SC.Helper.openCenteredPopup uri.toString(), 456, 510
     else
       throw "Either client_id and redirect_uri (for user agent flow) must be passed as an option"
     
   connectCallback: ->
     popupWindow = SC._popupWindow
-    params = SC.Helper.parseParameters(popupWindow.location.search + popupWindow.location.hash)
-    if params.error == "redirect_uri_mismatch"
-      popupWindow.document.body.innerHTML = "<p>The redirect URI '"+ popupWindow.location.toString() +"' you specified does not match the one that is configured in your SoundCloud app.</p> You can fix this in your <a href='http://soundcloud.com/you/apps' target='_blank'>app settings on SoundCloud</a>"
+    popupLocation = popupWindow.location.toString()
+    uri = new SC.URI(popupLocation, {decodeQuery: true, decodeFragment: true})
+    error = uri.query.error || uri.fragment.error
+
+    if error == "redirect_uri_mismatch"
+      popupWindow.document.body.innerHTML = "<p>The redirect URI '"+ popupLocation +"' you specified does not match the one that is configured in your SoundCloud app.</p> You can fix this in your <a href='http://soundcloud.com/you/apps' target='_blank'>app settings on SoundCloud</a>"
       return false
     
     popupWindow.close()
-    if params.error
-      SC._trigger("error", params.error)
+    if error
+      SC._trigger("error", error)
     else
-      SC.options.access_token = params.access_token
-      expiresInMS = params.expires_in * 1000
-      window.setTimeout(SC.disconnectCallback, expiresInMS)
+      SC.accessToken(uri.fragment.access_token);
       SC._trigger("success")
   
-    SC._trigger("general", params.error)
+    SC._trigger("general", error)
   
   
   disconnect: ->
-    this.disconnectCallback()
+    this.accessToken(null);
   
-  disconnectCallback: ->
-    if SC.options.access_token != undefined
-      SC.options.access_token = undefined
-      SC._trigger("disconnect")
-
   _trigger: (eventName, argument) -> 
     this.connectCallbacks[eventName](argument) if this.connectCallbacks[eventName]?
+
+  accessToken: (value) ->
+    storageKey = "SC.accessToken"
+    storage = this.storage()
+    if value == undefined
+      storage.getItem(storageKey)
+    else if value == null
+      storage.removeItem(storageKey)
+    else
+      storage.setItem(storageKey, value)
+
+  isConnected: ->
+    this.accessToken()?
 
 ############################
 # STREAMING                #
@@ -126,22 +132,28 @@ window.SC ||=
     
     # add scheme & host if relative
     if uri.isRelative()
-      uri.host = this.options.apiHost
+      uri.host = this.hostname("api")
       uri.scheme = "http"
 
     # add client_id or oauth access token
-    if this.options.access_token?
-      uri.query.oauth_token = this.options.access_token
+    if this.accessToken()?
+      uri.query.oauth_token = this.accessToken()
       uri.scheme = "https"
     else
       uri.query.client_id    = this.options.client_id
   
     uri
-  
+
+############################
+# STORAGE                  #
+############################
+  storage: ->
+    window.localStorage || this._fakeStorage = new SC.Helper.FakeStorage()
+
 ############################   
 #  HELPER                  #
 ############################
-  Helper:      
+  Helper:
     loadJavascript: (src, callback) ->
       elem = document.createElement("script")
       elem.async = true
@@ -151,16 +163,36 @@ window.SC ||=
       elem
       
     openCenteredPopup: (url, width, height) ->
-      left   = window.screenX + (window.outerWidth  - width)  / 2
-      top    = window.screenY + (window.outerHeight - height) / 2
-      window.open(url, "connectWithSoundCloud", "location=1, width=" + width + ", height=" + height + ", top="+ top +", left="+ left +", toolbar=no,scrollbars=yes")
-
+      options =
+        location: 1
+        width: width
+        height: height
+        left: window.screenX + (window.outerWidth  - width)  / 2
+        top:  window.screenY + (window.outerHeight - height) / 2
+        toolbar: "no"
+        scrollbars: "yes"
+      
+      options2 = []
+      options2.push(k + "=" + v) for own k, v of options
+      window.open(url, "connectWithSoundCloud", options2.join(", "))
+      
     attachEvent: (element, eventName, func) ->
       if element.attachEvent
         element.attachEvent("on" + eventName, func)
       else 
         element.addEventListener(eventName, func, false)
-     
+
+    FakeStorage: ->
+      return {
+        _store: {}
+        getItem: (key) ->
+          this._store[key] || null
+        setItem: (key, value) ->
+          this._store[key] = value.toString()
+        removeItem: (key) ->
+          delete this._store.key
+      }
+
     JSONP:
       callbacks: {}
       randomCallbackName: ->
