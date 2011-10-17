@@ -10,3 +10,6 @@
 [submodule "static/recorder.js"]
 	path = static/recorder.js
 	url = git@github.com:jwagener/recorder.js.git
+[submodule "static/crossdomain-requests-js"]
+	path = static/crossdomain-requests-js
+	url = git@github.com:jwagener/crossdomain-requests-js.git
