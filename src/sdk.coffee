@@ -37,7 +37,7 @@ window.SC ||=
         client_id:      options.client_id
         redirect_uri:   options.redirect_uri
         response_type:  "code_and_token"
-        scope:          options.scope || ""
+        scope:          options.scope || "non-expiring"
         display:        "popup"
       SC._popupWindow = SC.Helper.openCenteredPopup uri.toString(), 456, 510
     else
@@ -111,17 +111,53 @@ window.SC ||=
       if !sound = soundManager.getSoundById(options.id)
         sound = soundManager.createSound(options)
       sound
-      
-############################      
-#  NETWORKING              #
+
 ############################
-  get: (path, query, callback) ->
-    uri = this.prepareRequestURI(path, query)
-    unless callback?
+#   XDM post, put, delete  #
+############################
+
+  whenXDMReady: (callback) ->
+    if window.crossdomain? #this.apiXDChannel?
+      callback()
+    else
+      SC.Helper.loadJavascript "http://" + this.hostname("connect") + "/crossdomain-requests-js/crossdomain-ajax.js", ->
+        callback()
+
+  request: (method, path, query, callback) ->
+    if !callback?
       callback = query
       query = undefined
-    SC.Helper.JSONP.get uri, callback
+    query ||= {}
+    uri = SC.prepareRequestURI(path, query)
+    uri.query.format = "json"
+    #data = uri.encodeParams(uri.query) #uri.query = {}
     
+    this.whenXDMReady =>
+      crossdomain.ajax({
+        type: method
+        url:  uri.toString()
+        #data: data
+        headers:
+          "Content-Type": "application/x-www-form-urlencoded"
+        error: (response) ->
+          obj = JSON.parse(response)
+          callback(obj)
+        success: (response) ->
+          obj = JSON.parse(response)
+          callback(obj)
+      })
+
+  post:   (path, query, callback) ->
+    this.request("POST",   path, query, callback)
+
+  put:    (path, query, callback) ->
+    this.request("PUT",    path, query, callback)
+
+  get:    (path, query, callback) ->
+    this.request("GET",    path, query, callback)
+
+  delete: (path, callback) ->
+    this.request("DELETE", path, {}, callback)
 
   prepareRequestURI: (path, query={}) ->
     uri = new SC.URI(path, {"decodeQuery": true})
