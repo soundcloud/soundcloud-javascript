@@ -17,6 +17,14 @@
 .example {
   border-top: 1px solid #eee;
   padding-top: 30px;
-  text-align: center;
+  width: 100%;
+}
+
+.big.button {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.fullWidth {
   width: 100%;
 }

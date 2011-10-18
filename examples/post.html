@@ -16,11 +16,18 @@
       </div>
       <div class="content">
         <div id="left">
+          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
+            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a> or the other examples:
+            <a href="post.html">Posting</a>,
+            <a href="follow.html">Following</a>,
+            <a href="streaming.html">Streaming</a> or
+            <a href="record.html">Recording</a>.</p>
+          
           <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
           <div class="example"><script src="http://connect.soundcloud.dev/sdk.js"></script>  
 <script>
   SC.initialize({
-    client_id: "694f15bbffd7ae8e6e399f49dd228725",
+    client_id: "f7d8c67ee9db444f6c66e50685611fed",
     redirect_uri: "http://connect.soundcloud.dev/examples/callback.html"
   });
   
@@ -43,19 +50,21 @@
   
   $("#update").live("click", function(){
     SC.put("/me", {user: {description: "Updated"}}, function(){
-      console.log(arguments);
+      alert("Profile description updated!");
     });
   });
 </script>
   
   
-<a href="#" id="connect">Connect</a>
-Logged in User: <span id="username">Not connected yet</span>
-
-Your profile description:
-<textarea id="description"></textarea>
-<input type="button" id="update" value="update" />
-
+<a href="#" class="big button" id="connect">Connect with SoundCloud</a>
+<div class="logged-in" style="display: one;">
+  <p>
+  Logged in as: <span id="username"></span>
+  </p>
+  Your profile description:
+  <textarea id="description" class="fullWidth"></textarea>
+  <input type="button" id="update" class="big button" value="Update your profile description" />
+</div>
 
           </div>
         </div>

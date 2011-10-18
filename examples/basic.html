@@ -17,7 +17,11 @@
       <div class="content">
         <div id="left">
           <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
-            For more infos and examples have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
+            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a> or the other examples:
+            <a href="post.html">Posting</a>,
+            <a href="follow.html">Following</a>,
+            <a href="streaming.html">Streaming</a> or
+            <a href="record.html">Recording</a>.</p>
             
             
           <p>This example demonstrates how to <b>load the hottest track</b> on SoundCloud and <b>embed it using oEmbed</b>. </p>
@@ -28,7 +32,7 @@
   });
 
   $("#loadTracks").live("click", function(){
-    SC.get("/tracks", {"limit": 1}, function(tracks){
+    SC.get("/tracks", {limit: 1}, function(tracks){
       var track = tracks[0];
       SC.oEmbed(track.uri, document.getElementById("track"));
     });
