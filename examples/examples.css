@@ -10,6 +10,13 @@
   border-left: 1px solid #eee;
 }
 
-#right code {
+#right pre {
   overflow: scroll;
+}
+
+.example {
+  border-top: 1px solid #eee;
+  padding-top: 30px;
+  text-align: center;
+  width: 100%;
 }
