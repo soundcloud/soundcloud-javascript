@@ -19,11 +19,11 @@
           <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
           <div class="example"><script>
   SC.initialize({
-    client_id: "f7d8c67ee9db444f6c66e50685611fed"
+    client_id: "694f15bbffd7ae8e6e399f49dd228725"
   });
 
   SC.connect({
-    redirect_uri: "http://connect.soundcloud.dev/examples/redirect.html",
+    redirect_uri: "http://connect.soundcloud.dev/examples/callback.html",
     connected: function(){
       SC.get("/me", function(me){
         $("#username").text(me.username);
