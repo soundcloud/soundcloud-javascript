@@ -113,14 +113,15 @@ window.SC ||=
       sound
 
 ############################
-#   XDM post, put, delete  #
+#  XDM post, put, delete   #
 ############################
 
   whenXDMReady: (callback) ->
-    if window.crossdomain? #this.apiXDChannel?
+    if window.crossdomain?
       callback()
     else
-      SC.Helper.loadJavascript "http://" + this.hostname("connect") + "/crossdomain-requests-js/crossdomain-ajax.js", ->
+      window.CROSSDOMAINJS_PATH = "http://" + this.hostname("connect") + "/crossdomain-requests-js"
+      SC.Helper.loadJavascript CROSSDOMAINJS_PATH + "/crossdomain-ajax.js", ->
         callback()
 
   request: (method, path, query, callback) ->
@@ -179,6 +180,29 @@ window.SC ||=
       uri.query.client_id    = this.options.client_id
   
     uri
+
+##################################
+# oEmbed                         #
+##################################
+
+  oEmbed: (trackUrl, query, callback) ->
+    # optional query
+    if !callback?
+      callback = query
+      query = undefined
+    query ||= {}
+    query.url = trackUrl
+
+    uri = new SC.URI("http://" + SC.hostname("api") + "/oembed")
+    uri.query = query
+
+    # rewrite callback if it's a DOM
+    if callback.nodeType != undefined && callback.nodeType == 1
+       element = callback;
+       callback = (oembed) =>
+         element.innerHTML = oembed.html
+
+    SC.Helper.JSONP.get(uri, callback)
 
 ############################
 # STORAGE                  #
