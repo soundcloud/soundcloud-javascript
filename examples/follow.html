@@ -19,20 +19,26 @@
           <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
           <div class="example"><script>
   SC.initialize({
-    client_id: "f7d8c67ee9db444f6c66e50685611fed",
-    redirect_uri: "http://connect.soundcloud.dev/examples/redirect.html"
+    client_id: "f7d8c67ee9db444f6c66e50685611fed"
   });
 
-  SC.get("/tracks", {"limit": 5}, function(tracks){
-    $.each(tracks, function(){
-      var track = this;
-      $("<li/>").text(track.title).appendTo("#tracks");
-    });
+  SC.connect({
+    redirect_uri: "http://connect.soundcloud.dev/examples/redirect.html",
+    connected: function(){
+      SC.get("/me", function(me){
+        $("#username").text(me.username);
+        $("#description").val(me.description);
+      });
+    }
+  });
+
+
+  SC.put("/me", {"description": "Updated "}, function(){
+    console.log(arguments);
   });
 </script>
 
-Hot tracks:
-<ul id="tracks"></ul>
+<a href="http://soundcloud.com/jwagener" class="soundcloud-follow">Follow jwagener on SoundCloud</a>
           </div>
         </div>
         <div id="right"><pre><code></code></pre></div>

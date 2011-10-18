@@ -17,22 +17,8 @@
       <div class="content">
         <div id="left">
           <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
-          <div class="example"><script>
-  SC.initialize({
-    client_id: "f7d8c67ee9db444f6c66e50685611fed",
-    redirect_uri: "http://connect.soundcloud.dev/examples/redirect.html"
-  });
+          <div class="example">Start Example here...
 
-  SC.get("/tracks", {"limit": 5}, function(tracks){
-    $.each(tracks, function(){
-      var track = this;
-      $("<li/>").text(track.title).appendTo("#tracks");
-    });
-  });
-</script>
-
-Hot tracks:
-<ul id="tracks"></ul>
           </div>
         </div>
         <div id="right"><pre><code></code></pre></div>

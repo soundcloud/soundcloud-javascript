@@ -1,0 +1,15 @@
+#left, #right {
+  width: 45%;
+  float: left;
+}
+
+#right {
+  width: 40%;
+  padding-left: 30px;
+  margin-left: 30px;
+  border-left: 1px solid #eee;
+}
+
+#right code {
+  overflow: scroll;
+}
