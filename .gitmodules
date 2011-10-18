@@ -13,3 +13,6 @@
 [submodule "static/crossdomain-requests-js"]
 	path = static/crossdomain-requests-js
 	url = git@github.com:jwagener/crossdomain-requests-js.git
+[submodule "static/legacy"]
+	path = static/legacy
+	url = git@github.com:soundcloud/sc-connect.git
