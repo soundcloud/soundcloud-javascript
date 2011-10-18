@@ -2,7 +2,7 @@
 
 <html lang="en">
   <head>
-    <title>SoundCloud JavaScript SDK - New Example</title>
+    <title>SoundCloud JavaScript SDK - Basic Example</title>
     <link href="http://importer.soundcloudlabs.com/stylesheets/labs.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="examples.css" media="screen" rel="stylesheet" type="text/css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
@@ -12,27 +12,33 @@
     
     <div id="page">
       <div id="header">
-        <a href="/"><h1>SoundCloud JavaScript SDK - New Example</h1></a>
+        <a href="/"><h1>SoundCloud JavaScript SDK - Basic Example</h1></a>
       </div>
       <div class="content">
         <div id="left">
-          <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
-          <div class="example"><script>
+          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
+            For more infos and examples have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
+            
+            
+          <p>This example demonstrates how to <b>load the hottest track</b> on SoundCloud and <b>embed it using oEmbed</b>. </p>
+          <div class="example"><script src="http://connect.soundcloud.dev/sdk.js"></script>  
+<script>
   SC.initialize({
-    client_id: "f7d8c67ee9db444f6c66e50685611fed",
-    redirect_uri: "http://connect.soundcloud.dev/examples/redirect.html"
+    client_id: "YOUR_CLIENT_ID",
   });
 
-  SC.get("/tracks", {"limit": 5}, function(tracks){
-    $.each(tracks, function(){
-      var track = this;
-      $("<li/>").text(track.title).appendTo("#tracks");
+  $("#loadTracks").live("click", function(){
+    SC.get("/tracks", {"limit": 1}, function(tracks){
+      var track = tracks[0];
+      SC.oEmbed(track.uri, document.getElementById("track"));
     });
   });
 </script>
 
-Hot tracks:
-<ul id="tracks"></ul>
+<input type="button" id="loadTracks" class="button big" value="Get hottest track" />
+<div id="track"></div>
+
+
           </div>
         </div>
         <div id="right"><pre><code></code></pre></div>
