@@ -15,13 +15,17 @@
         <a href="/"><h1>SoundCloud JavaScript SDK - Post Example</h1></a>
       </div>
       <div class="content">
+        <div class="tab-ui">
+          <ul class="tabs">
+            <li class="first"><a href="basic.html">Basic</a></li>
+            <li class="first current"><a href="post.html">Connecting</a></li>
+            <li class="first"><a href="streaming.html">Streaming</a></li>
+            <li class="first"><a href="record.html">Recording</a></li>
+          </ul>
+        </div>
         <div id="left">
           <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
-            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a> or the other examples:
-            <a href="post.html">Posting</a>,
-            <a href="follow.html">Following</a>,
-            <a href="streaming.html">Streaming</a> or
-            <a href="record.html">Recording</a>.</p>
+            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
           
           <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
           <div class="example"><script src="http://connect.soundcloud.dev/sdk.js"></script>  
@@ -49,7 +53,7 @@
   });
   
   $("#update").live("click", function(){
-    SC.put("/me", {user: {description: "Updated"}}, function(){
+    SC.put("/me", {user: {description: $("#description").val()}}, function(){
       alert("Profile description updated!");
     });
   });

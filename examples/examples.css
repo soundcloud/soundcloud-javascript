@@ -28,3 +28,11 @@
 .fullWidth {
   width: 100%;
 }
+
+.tab-ui a {
+  color: black;
+}
+
+.tab-ui li.current a {
+  color: #F60;
+}

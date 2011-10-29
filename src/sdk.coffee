@@ -102,12 +102,11 @@ window.SC ||=
           callback()
   
   stream: (track, options={}) ->
-    trackId = SC.Helper.extractTrackId(track);
+    trackId = track
     # track can be id, relative, absolute
     SC.whenStreamingReady ->
       options.id = "T" + trackId
-      #options.url = authenticateUrla
-      #options.url = "http://api.soundcloud.com/tracks/" + trackId + "/stream?client_id=YOUR_CLIENT_ID"
+      options.url = "http://" + SC.hostname("api") + "/tracks/" + trackId + "/stream?client_id=YOUR_CLIENT_ID"
       if !sound = soundManager.getSoundById(options.id)
         sound = soundManager.createSound(options)
       sound
