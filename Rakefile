@@ -31,9 +31,10 @@ task :build_static_recorder_js do
 end
 
 task :build_static_soundmanager do 
-  sh "mkdir -p #{build_dir}/soundmanager2/script #{build_dir}/soundmanager2/swf"
-  sh "cp -R static/soundmanager2/script/soundmanager2-nodebug-jsmin.js #{build_dir}/soundmanager2/soundmanager2.js"
-  sh "cp -R static/soundmanager2/swf/soundmanager2_flash_xdomain/*.swf #{build_dir}/soundmanager2/"
+  sm_build_dir = "#{build_dir}/soundmanager2"
+  sh "mkdir -p #{build_dir}/soundmanager2/script"
+  sh "cp -R static/soundmanager2/script/soundmanager2-nodebug-jsmin.js #{sm_build_dir}/soundmanager2.js"
+  sh "unzip -j -o static/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d #{sm_build_dir}"
 end
 
 task :build_static_uri do
