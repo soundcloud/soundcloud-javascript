@@ -11,6 +11,7 @@ window.SC ||=
   initialize: (options={}) ->
     this.accessToken(options["access_token"])
     this.options[key] = value for own key, value of options
+    this.options.flashXHR ||= (new XMLHttpRequest()).withCredentials == undefined
     this
 
   hostname: (subdomain) ->
@@ -22,15 +23,14 @@ window.SC ||=
 #################
 # AUTHORIZATION #
 #################
-    
+
   connect: (options) ->
     options.client_id    ||= SC.options.client_id
     options.redirect_uri ||= SC.options.redirect_uri
     SC.connectCallbacks.success    = options.connected
     SC.connectCallbacks.error      = options.error
     SC.connectCallbacks.general    = options.callback
-  
-  
+
     if options.client_id && options.redirect_uri
       uri = new SC.URI("https://" + this.hostname() + "/connect/?")
       uri.query = 
@@ -42,7 +42,7 @@ window.SC ||=
       SC._popupWindow = SC.Helper.openCenteredPopup uri.toString(), 456, 510
     else
       throw "Either client_id and redirect_uri (for user agent flow) must be passed as an option"
-    
+
   connectCallback: ->
     popupWindow = SC._popupWindow
     popupLocation = popupWindow.location.toString()
@@ -52,17 +52,16 @@ window.SC ||=
     if error == "redirect_uri_mismatch"
       popupWindow.document.body.innerHTML = "<p>The redirect URI '"+ popupLocation +"' you specified does not match the one that is configured in your SoundCloud app.</p> You can fix this in your <a href='http://soundcloud.com/you/apps' target='_blank'>app settings on SoundCloud</a>"
       return false
-    
+
     popupWindow.close()
     if error
       SC._trigger("error", error)
     else
       SC.accessToken(uri.fragment.access_token);
       SC._trigger("success")
-  
+
     SC._trigger("general", error)
-  
-  
+
   disconnect: ->
     this.accessToken(null);
   
@@ -130,22 +129,53 @@ window.SC ||=
     query ||= {}
     uri = SC.prepareRequestURI(path, query)
     uri.query.format = "json"
-    #data = uri.encodeParams(uri.query) #uri.query = {}
-    
-    this.whenXDMReady =>
-      crossdomain.ajax({
-        type: method
-        url:  uri.toString()
-        #data: data
-        headers:
-          "Content-Type": "application/x-www-form-urlencoded"
-        error: (response) ->
-          obj = JSON.parse(response)
-          callback(obj)
-        success: (response) ->
-          obj = JSON.parse(response)
-          callback(obj)
-      })
+
+    if SC.options.flashXHR
+      uri.query["_status_code_map[400]"] = 200
+      uri.query["_status_code_map[401]"] = 200
+      uri.query["_status_code_map[403]"] = 200
+      uri.query["_status_code_map[404]"] = 200
+      uri.query["_status_code_map[422]"] = 200
+      uri.query["_status_code_map[500]"] = 200
+      uri.query["_status_code_map[503]"] = 200
+      uri.query["_status_code_map[504]"] = 200
+
+    if method == "PUT" || method == "DELETE"
+      uri.query._method = method
+      method = "POST"
+
+    if method != "GET"
+      data = uri.encodeParams(uri.query)
+      uri.query = {}
+
+    handleResponse = (responseText, xhr) ->
+      json = SC.Helper.JSON.parse(responseText)
+      error = null
+
+      if !json
+        if xhr
+          error = {message: "HTTP Error: " + xhr.status}
+        else
+          error = {message: "Unknown error"}
+      else if json.errors
+        error = { message: json.errors && json.errors[0].error_message }
+
+      callback(json, error)
+
+    if SC.options.flashXHR
+      this.whenRecordingReady ->
+        Recorder.request method, uri.toString(), data, handleResponse
+    else
+      this._request method, uri.toString(), data, handleResponse
+
+  _request: (method, uri, data, callback) ->
+    request = new XMLHttpRequest();
+    request.open(method, uri.toString(), true);
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+    request.onreadystatechange = (e) ->
+      if(e.target.readyState == 4)
+        callback(e.target.responseText, e.target)
+    request.send(data);
 
   post:   (path, query, callback) ->
     this.request("POST",   path, query, callback)
