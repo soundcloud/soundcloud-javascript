@@ -251,7 +251,14 @@ window.SC ||=
         removeItem: (key) ->
           delete this._store.key
       }
-
+    JSON:
+      parse: (string) ->
+        if string[0] != "{" && string[0] != "["
+          return null
+        else if window.JSON?
+          window.JSON.parse(string)
+        else
+          eval(string)
     JSONP:
       callbacks: {}
       randomCallbackName: ->
