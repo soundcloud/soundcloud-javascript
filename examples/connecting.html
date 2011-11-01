@@ -34,27 +34,31 @@
     client_id: "f7d8c67ee9db444f6c66e50685611fed",
     redirect_uri: "http://connect.soundcloud.dev/examples/callback.html"
   });
-  
+
   function getUserDetails(){
     SC.get("/me", function(me){
       $("#username").text(me.username);
       $("#description").val(me.description);
     });
   }
-  
+
   if(SC.isConnected()){
     getUserDetails();
   }
-  
+
   $("#connect").live("click", function(){
     SC.connect({
       connected: getUserDetails
     });
   });
-  
+
   $("#update").live("click", function(){
-    SC.put("/me", {user: {description: $("#description").val()}}, function(){
-      alert("Profile description updated!");
+    SC.put("/me", {user: {description: $("#description").val()}}, function(response, error){
+      if(error){
+        alert("Some error occured: " + error.message);
+      }else{
+        alert("Profile description updated!");
+      }
     });
   });
 </script>
@@ -67,7 +71,7 @@
   </p>
   Your profile description:
   <textarea id="description" class="fullWidth"></textarea>
-  <input type="button" id="update" class="big button" value="Update your profile description" />
+  <button id="update" class="big button">Update your profile description</button>
 </div>
 
           </div>
