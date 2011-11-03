@@ -24,8 +24,103 @@
           </ul>
         </div>
         <div id="left">
+          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
+            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
+
           <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
-          <div class="example">Record example
+          <div class="example"><script src="http://connect.soundcloud.dev/sdk.js"></script>  
+<script>
+  SC.initialize({
+    client_id:    "f7d8c67ee9db444f6c66e50685611fed",
+    redirect_uri: "http://connect.soundcloud.dev/examples/callback.html"
+  });
+
+  $("#recorderUI.reset #controlButton").live("click", function(e){
+    updateTimer(0);
+    SC.record({
+      start: function(){
+        setRecorderUIState("recording");
+      },
+      progress: function(ms, avgPeak){
+        updateTimer(ms);
+      }
+    });
+    e.preventDefault();
+  });
+
+  $("#recorderUI.recording #controlButton, #recorderUI.playing #controlButton").live("click", function(e){
+    setRecorderUIState("recorded");
+    SC.recordStop();
+    e.preventDefault();
+  });
+
+  $("#recorderUI.recorded #controlButton").live("click", function(e){
+    updateTimer(0);
+    setRecorderUIState("playing");
+    SC.recordPlay({
+      progress: function(ms){
+        updateTimer(ms);
+      },
+      finished: function(){
+        setRecorderUIState("recorded");
+      }
+    });
+    e.preventDefault();
+  });
+
+  $("#reset").live("click", function(e){
+    SC.recordStop();
+    setRecorderUIState("reset");
+    e.preventDefault();
+  });
+
+  $("#upload").live("click", function(e){
+    setRecorderUIState("uploading");
+
+    var upload = function(){
+      $("#uploadStatus").html("Uploading...");
+      SC.recordUpload({
+        track: {
+          title: "Untitled Recording",
+          sharing: "private"
+        }
+      }, function(track){
+        $("#uploadStatus").html("Uploaded: <a href='" + track.permalink_url + "'>" + track.permalink_url + "</a>");
+      });
+    }
+
+    if(SC.isConnected()){
+      upload();
+    }else{
+      SC.connect({
+        connected: upload
+      });
+    }
+
+    e.preventDefault();
+  });
+
+
+  function updateTimer(ms){
+    $("#timer").text(SC.Helper.millisecondsToHMS(ms));
+  }
+
+  function setRecorderUIState(state){
+    // state can be reset, recording, recorded, playing, uploading
+    // visibility of buttons is managed via CSS
+    $("#recorderUI").attr("class", state);
+  }
+</script>
+<div id="recorderUI" class="reset">
+  <a href="#" id="controlButton" class="record"><span id="timer" class="hidden">0:00</span></a>
+  <!--<input type="text" id="title" />-->
+  <div id="otherControls">
+    <a href="#" id="reset" class="button">Reset</a>
+    <a href="#" id="upload" class="button">Upload</a>
+  </div>
+  <div id="uploadStatus"></div>
+</div>
+
 
           </div>
         </div>

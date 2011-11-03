@@ -36,3 +36,53 @@
 .tab-ui li.current a {
   color: #F60;
 }
+
+#recorderUI {
+  width: 182px;
+  margin: auto;
+}
+
+
+#recorderUI #timer {
+  color: black;
+  line-height: 85px;
+  width: 100%;
+  text-align: center;
+  display: none;
+}
+
+#recorderUI.recording #timer, #recorderUI.playing #timer {
+  display: block;
+}
+
+
+#recorderUI #otherControls {
+  display: none;
+}
+
+#recorderUI.playing #otherControls, #recorderUI.recorded #otherControls {
+  display: block;
+}
+
+#reset, #upload {
+  width: 50px;
+  margin: 5px;
+}
+
+#otherControls {
+  clear: both;
+}
+
+
+#controlButton { margin: auto !important; padding: 0 !important; border: 0 !important; -moz-border-radius: 0; -webkit-border-radius: 0; -o-border-radius: 0; -ms-border-radius: 0; border-radius: 0; -webkit-transition: none; -moz-transition: none; -o-transition: none; transition: none; display: block; width: 84px; height: 84px; background-color: transparent !important; background-image: url(rec_button_large.png) !important; background-position: 0 0; }
+
+#recorderUI.recording #controlButton, #recorderUI.playing #controlButton {
+  background-position: 0 -84px;
+}
+#recorderUI.recorded #controlButton { background-position: 0 -168px; }
+
+
+
+
+#controlButton.pause { background-position: 0 -252px; }
+
