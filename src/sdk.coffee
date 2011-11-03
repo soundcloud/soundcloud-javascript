@@ -174,11 +174,11 @@ window.SC ||=
 
   prepareRequestURI: (path, query={}) ->
     uri = new SC.URI(path, {"decodeQuery": true})
-    
+
     # shallow merge of queries
     for own k,v of query
       uri.query[k] = v
-    
+
     # add scheme & host if relative
     if uri.isRelative()
       uri.host = this.hostname("api")
@@ -190,7 +190,7 @@ window.SC ||=
       uri.scheme = "https"
     else
       uri.query.client_id    = this.options.client_id
-  
+
     uri
 
 ##################################
@@ -300,12 +300,12 @@ window.SC ||=
       callbacks: {}
       randomCallbackName: ->
         "CB" + parseInt Math.random() * 999999, 10
-      
+
       get: (uri, callback) ->
         callbackName        = this.randomCallbackName()
         uri.query.format = "js"
         uri.query.callback = "SC.Helper.JSONP.callbacks." + callbackName
         SC.Helper.JSONP.callbacks[callbackName] = callback
-        
+
         SC.Helper.loadJavascript uri.toString(), ->
           document.body.removeChild(this)
