@@ -131,14 +131,7 @@ window.SC ||=
     uri.query.format = "json"
 
     if SC.options.flashXHR
-      uri.query["_status_code_map[400]"] = 200
-      uri.query["_status_code_map[401]"] = 200
-      uri.query["_status_code_map[403]"] = 200
-      uri.query["_status_code_map[404]"] = 200
-      uri.query["_status_code_map[422]"] = 200
-      uri.query["_status_code_map[500]"] = 200
-      uri.query["_status_code_map[503]"] = 200
-      uri.query["_status_code_map[504]"] = 200
+      SC.Helper.setFlashStatusCodeMaps(uri.query)
 
     if method == "PUT" || method == "DELETE"
       uri.query._method = method
@@ -271,6 +264,15 @@ window.SC ||=
       else 
         element.addEventListener(eventName, func, false)
 
+    setFlashStatusCodeMaps: (query) ->
+      query["_status_code_map[400]"] = 200
+      query["_status_code_map[401]"] = 200
+      query["_status_code_map[403]"] = 200
+      query["_status_code_map[404]"] = 200
+      query["_status_code_map[422]"] = 200
+      query["_status_code_map[500]"] = 200
+      query["_status_code_map[503]"] = 200
+      query["_status_code_map[504]"] = 200
     FakeStorage: ->
       return {
         _store: {}
