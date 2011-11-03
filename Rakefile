@@ -26,7 +26,7 @@ end
 
 task :build_static_recorder_js do
   sh "mkdir -p #{build_dir}/recorder.js"
-  sh "cp -R static/recorder.js/recorder.swf #{build_dir}/recorder.js/recorder.swf"
+  sh "cp -R static/recorder.js/flash/bin-release/Recorder.swf #{build_dir}/recorder.js/recorder.swf"
   sh "cat static/recorder.js/recorder.js >> #{build_dir}/sdk.js"
 end
 
