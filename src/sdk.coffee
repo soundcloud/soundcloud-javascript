@@ -142,18 +142,8 @@ window.SC ||=
       uri.query = {}
 
     handleResponse = (responseText, xhr) ->
-      json = SC.Helper.JSON.parse(responseText)
-      error = null
-
-      if !json
-        if xhr
-          error = {message: "HTTP Error: " + xhr.status}
-        else
-          error = {message: "Unknown error"}
-      else if json.errors
-        error = { message: json.errors && json.errors[0].error_message }
-
-      callback(json, error)
+      response = SC.Helper.responseHandler(responseText, xhr)
+      callback(response.json, response.error)
 
     if SC.options.flashXHR
       this.whenRecordingReady ->
@@ -273,6 +263,21 @@ window.SC ||=
       query["_status_code_map[500]"] = 200
       query["_status_code_map[503]"] = 200
       query["_status_code_map[504]"] = 200
+
+    responseHandler: (responseText, xhr) ->
+      json = SC.Helper.JSON.parse(responseText)
+      error = null
+
+      if !json
+        if xhr
+          error = {message: "HTTP Error: " + xhr.status}
+        else
+          error = {message: "Unknown error"}
+      else if json.errors
+        error = { message: json.errors && json.errors[0].error_message }
+
+      {"json": json, "error": error}
+
     FakeStorage: ->
       return {
         _store: {}
