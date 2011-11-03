@@ -290,6 +290,25 @@ window.SC ||=
       else 
         element.addEventListener(eventName, func, false)
 
+    millisecondsToHMS: (ms) ->
+      hms = {
+        h: Math.floor(ms/(60*60*1000)),
+        m: Math.floor((ms/60000) % 60),
+        s: Math.floor((ms/1000) % 60)
+      }
+      tc = []
+      tc.push(hms.h) if (hms.h > 0)
+      m = hms.m;
+
+      mPrefix = ""
+      sPrefix = ""
+      mPrefix = "0" if hms.m < 10 && hms.h > 0
+      sPrefix = "0" if hms.s < 10
+
+      tc.push(mPrefix + hms.m)
+      tc.push(sPrefix + hms.s)
+      tc.join(':')
+
     setFlashStatusCodeMaps: (query) ->
       query["_status_code_map[400]"] = 200
       query["_status_code_map[401]"] = 200
