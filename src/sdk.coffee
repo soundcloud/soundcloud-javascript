@@ -313,7 +313,7 @@ window.SC ||=
 
       tc.push(mPrefix + hms.m)
       tc.push(sPrefix + hms.s)
-      tc.join(':')
+      tc.join('.')
 
     setFlashStatusCodeMaps: (query) ->
       query["_status_code_map[400]"] = 200
