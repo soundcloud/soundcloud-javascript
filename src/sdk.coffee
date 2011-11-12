@@ -54,13 +54,10 @@ window.SC ||=
     popupLocation = popupWindow.location.toString()
     uri = new SC.URI(popupLocation, {decodeQuery: true, decodeFragment: true})
     error = uri.query.error || uri.fragment.error
-
-    if error == "redirect_uri_mismatch"
-      popupWindow.document.body.innerHTML = "<p>The redirect URI '"+ popupLocation +"' you specified does not match the one that is configured in your SoundCloud app.</p> You can fix this in your <a href='http://soundcloud.com/you/apps' target='_blank'>app settings on SoundCloud</a>"
-      return false
-
     popupWindow.close()
+
     if error
+      throw new Error("SC OAuth2 Error: " + uri.query.error_description)
       SC._trigger("error", error)
     else
       SC.accessToken(uri.fragment.access_token);
