@@ -4,7 +4,7 @@
 }
 
 #right {
-  width: 40%;
+  width: 49%;
   padding-left: 30px;
   margin-left: 30px;
   border-left: 1px solid #eee;
@@ -23,6 +23,7 @@
 .big.button {
   width: 100%;
   margin-bottom: 30px;
+  padding: 0 0;
 }
 
 .fullWidth {
@@ -44,7 +45,8 @@
 
 
 #recorderUI #timer {
-  color: black;
+  font-weight: bold;
+  color: #333;
   line-height: 85px;
   width: 100%;
   text-align: center;
@@ -80,8 +82,6 @@
   background-position: 0 -84px;
 }
 #recorderUI.recorded #controlButton { background-position: 0 -168px; }
-
-
 
 
 #controlButton.pause { background-position: 0 -252px; }
