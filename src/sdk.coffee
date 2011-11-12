@@ -24,7 +24,13 @@ window.SC ||=
 # AUTHORIZATION #
 #################
 
-  connect: (options) ->
+  connect: (optionsOrCallback) ->
+    if typeof(optionsOrCallback) == "function"
+      options =
+        connected: optionsOrCallback
+    else
+      options = optionsOrCallback
+
     options.client_id    ||= SC.options.client_id
     options.redirect_uri ||= SC.options.redirect_uri
     SC.connectCallbacks.success    = options.connected
