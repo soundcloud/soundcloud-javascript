@@ -3,6 +3,7 @@
 #############################
 
 window.SC ||=
+  _version: "1.0.2"
   options:
     site: "soundcloud.dev",
   connectCallbacks: {}
@@ -233,7 +234,7 @@ window.SC ||=
       callback()
     else
       Recorder.initialize({
-        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder.swf",
+        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder.swf?" + SC._version,
         initialized: () ->
           callback()
       })
