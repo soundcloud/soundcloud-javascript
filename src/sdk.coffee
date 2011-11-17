@@ -3,7 +3,7 @@
 #############################
 
 window.SC ||=
-  _version: "1.0.3"
+  _version: "1.0.4"
   options:
     site: "soundcloud.dev",
   connectCallbacks: {}
@@ -108,10 +108,9 @@ window.SC ||=
     trackId = track
     # track can be id, relative, absolute
     SC.whenStreamingReady ->
-      options.id = "T" + trackId
+      options.id = "T" + trackId + "-" + Math.random()
       options.url = "http://" + SC.hostname("api") + "/tracks/" + trackId + "/stream?client_id=YOUR_CLIENT_ID"
-      if !sound = soundManager.getSoundById(options.id)
-        sound = soundManager.createSound(options)
+      sound = soundManager.createSound(options)
       sound
 
 ############################
