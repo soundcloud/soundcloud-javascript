@@ -3,7 +3,7 @@
 #############################
 
 window.SC ||=
-  _version: "1.0.2"
+  _version: "1.0.3"
   options:
     site: "soundcloud.dev",
   connectCallbacks: {}
