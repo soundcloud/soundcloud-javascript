@@ -3,7 +3,7 @@
 #############################
 
 window.SC ||=
-  _version: "1.0.4"
+  _version: "1.0.5"
   options:
     site: "soundcloud.dev",
   connectCallbacks: {}
@@ -112,6 +112,10 @@ window.SC ||=
       options.url = "http://" + SC.hostname("api") + "/tracks/" + trackId + "/stream?client_id=YOUR_CLIENT_ID"
       sound = soundManager.createSound(options)
       sound
+
+  streamStopAll: ->
+    if window.soundManager?
+      window.soundManager.stopAll()
 
 ############################
 #  XDM post, put, delete   #
