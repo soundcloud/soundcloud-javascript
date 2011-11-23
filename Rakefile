@@ -27,7 +27,7 @@ end
 task :build_static_recorder_js do
   sh "mkdir -p #{build_dir}/recorder.js"
   sh "cp -R static/recorder.js/flash/bin-release/Recorder.swf #{build_dir}/recorder.js/recorder.swf"
-  sh "cat static/recorder.js/recorder.js >> #{build_dir}/sdk.js"
+  sh "cat static/recorder.js/recorder.js | closure-compiler >> #{build_dir}/sdk.js"
 end
 
 task :build_static_soundmanager do 
@@ -38,7 +38,7 @@ task :build_static_soundmanager do
 end
 
 task :build_static_uri do
-  sh "cat static/uri/build/uri.js | sed -e 's/window.URI/window.SC.URI/g' >> #{build_dir}/sdk.js"
+  sh "cat static/uri/build/uri.js | sed -e 's/window.URI/window.SC.URI/g' | closure-compiler >> #{build_dir}/sdk.js"
 end
 
 task :build_js do
