@@ -15,8 +15,13 @@ $(document).ready(function(){
     SC.initialize({
       client_id: "YOUR_CLIENT_ID",
       site:      "soundcloud.com"
-    })
+    });
     equals(SC.hostname("connect"), "connect.soundcloud.com");
+    // resetting
+    SC.initialize({
+      client_id: "YOUR_CLIENT_ID",
+      site:      "soundcloud.dev"
+    });
   });
 
   module("SC Networking");
