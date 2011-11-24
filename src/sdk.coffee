@@ -3,7 +3,7 @@
 #############################
 
 window.SC ||=
-  _version: "1.0.5"
+  _version: "1.0.6"
   options:
     site: "soundcloud.dev",
   connectCallbacks: {}
@@ -120,14 +120,6 @@ window.SC ||=
 ############################
 #  XDM post, put, delete   #
 ############################
-
-  whenXDMReady: (callback) ->
-    if window.crossdomain?
-      callback()
-    else
-      window.CROSSDOMAINJS_PATH = "http://" + this.hostname("connect") + "/crossdomain-requests-js"
-      SC.Helper.loadJavascript CROSSDOMAINJS_PATH + "/crossdomain-ajax.js", ->
-        callback()
 
   request: (method, path, query, callback) ->
     if !callback?
