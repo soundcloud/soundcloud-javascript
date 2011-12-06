@@ -1,12 +1,49 @@
 $(function(){
   SC.initialize({
-    site: "soundcloud.com",
+    site: "soundcloud.dev",
     client_id: "YOUR_CLIENT_ID"
   });
-  // non-expiring access token for soundcloud.com/js-sdk-test
-  SC.accessToken("1-9917-9174539-22263fb3eab453981");
-  var fixtureTrackId = 28752070;
+
+  /* the first 2 tests will setup the accessToken and fixture track */
+  var fixtureTrackId, accessToken;
+
+  asyncTest("Retrieve token using OAuth2", 1, function(){
+    SC.accessToken(null);
+    SC.post("/oauth2/token", {
+      'client_id':     'YOUR_CLIENT_ID',
+      'client_secret': 'YOUR_CLIENT_SECRET',
+      'grant_type':    'password',
+      'username':      'js-sdk-test',
+      'password':      'js-sdk-test-pw',
+    }, function(response){
+      accessToken = response.access_token;
+      SC.accessToken(accessToken);
+      ok(response.access_token);
+      start();
+    });
+  });
   
+  asyncTest("Audio Recording and Uploading", 1, function(){
+    var trackTitle = "JS SDK Test Recording";
+    SC.record({
+      start: function(){
+        window.setTimeout(function(){
+          SC.recordStop();
+          SC.recordUpload({
+            track: {
+              title: trackTitle,
+              sharing: "private"
+            }}, function(track){
+              fixtureTrackId = track.id;
+              equal(track.title, trackTitle);
+              start();
+            }
+          );
+        }, 2000);
+      }
+    })
+  });
+
   asyncTest("Receive latest tracks", 1, function(){
     SC.get("/tracks", {limit: 2}, function(tracks){
       equal(tracks.length, 2);
@@ -35,26 +72,6 @@ $(function(){
       equal(error.message, "404 - Not Found");
       start();
     });
-  });
-
-  asyncTest("Audio Recording and Uploading", 1, function(){
-    var trackTitle = "JS SDK Test Recording";
-    SC.record({
-      start: function(){
-        window.setTimeout(function(){
-          SC.recordStop();
-          SC.recordUpload({
-            track: {
-              title: trackTitle,
-              sharing: "private"
-            }}, function(track){
-              equal(track.title, trackTitle);
-              start();
-            }
-          );
-        }, 2000);
-      }
-    })
   });
 
   /* not yet implemented */

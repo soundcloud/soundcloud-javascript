@@ -2,7 +2,7 @@ task :help do
   puts "No Help. You are all on your own."
 end
 
-task :build => [:create_build_dir, :build_js, :build_static, :build_examples] do
+task :build => [:create_build_dir, :build_js, :build_static, :build_tests, :build_examples] do
 end
 
 task :create_build_dir do
@@ -40,6 +40,13 @@ end
 task :build_static_uri do
   sh "cat static/uri/build/uri.js | sed -e 's/window.URI/window.SC.URI/g' | closure-compiler >> #{build_dir}/sdk.js"
 end
+
+task :build_tests do
+  sh "mkdir -p #{build_dir}/test"
+  sh "cat test/async.js #{replace_client_credentials_pipe} > #{build_dir}/test/async.js"
+  sh "cat test/async.html #{replace_client_credentials_pipe} > #{build_dir}/test/async.html"
+end
+
 
 task :build_js do
   if release?
