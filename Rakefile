@@ -43,8 +43,9 @@ end
 
 task :build_tests do
   sh "mkdir -p #{build_dir}/test"
-  sh "cat test/async.js #{replace_client_credentials_pipe} > #{build_dir}/test/async.js"
-  sh "cat test/async.html #{replace_client_credentials_pipe} > #{build_dir}/test/async.html"
+  
+  sh "cat test/async.js   #{replace_client_credentials_pipe if release?} > #{build_dir}/test/async.js"
+  sh "cat test/async.html #{replace_client_credentials_pipe if release?} > #{build_dir}/test/async.html"
 end
 
 
@@ -70,6 +71,11 @@ end
 
 task :test do
   sh "open test/test.html"
+end
+
+task :test_live do
+  sh "ponyhost server -p 4444 &"
+  sh "sleep 2 && open http://localhost:4444/test/live.html"
 end
 
 task :build_examples do
