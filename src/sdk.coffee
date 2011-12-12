@@ -2,13 +2,13 @@
 # SoundCloud JavaScript SDK #
 #############################
 
-window.SC ||=
-  _version: "1.0.6"
+window.SC =
+  _version: "1.0.7"
   options:
-    site: "soundcloud.dev",
+    site: "soundcloud.dev"
   connectCallbacks: {}
   _popupWindow: undefined
-  
+
   initialize: (options={}) ->
     this.accessToken(options["access_token"])
     this.options[key] = value for own key, value of options
@@ -24,7 +24,6 @@ window.SC ||=
 #################
 # AUTHORIZATION #
 #################
-
   connect: (optionsOrCallback) ->
     if typeof(optionsOrCallback) == "function"
       options =
@@ -120,10 +119,9 @@ window.SC ||=
 ############################
 #  XDM post, put, delete   #
 ############################
-
-  request: (method, path, query, callback) ->
+  _apiRequest: (method, path, query, callback) ->
     if !callback?
-      callback = query
+      callback = query 
       query = undefined
     query ||= {}
     uri = SC.prepareRequestURI(path, query)
@@ -140,36 +138,40 @@ window.SC ||=
       data = uri.encodeParams(uri.query)
       uri.query = {}
 
-    handleResponse = (responseText, xhr) ->
+    this._request method, uri, "application/x-www-form-urlencoded", data, (responseText, xhr) ->
       response = SC.Helper.responseHandler(responseText, xhr)
       callback(response.json, response.error)
 
+  _request: (method, uri, contentType, data, callback) ->
     if SC.options.flashXHR
-      this.whenRecordingReady ->
-        Recorder.request method, uri.toString(), data, handleResponse
+      this._flashRequest method, uri, contentType, data, callback
     else
-      this._request method, uri.toString(), data, handleResponse
+      this._xhrRequest   method, uri, contentType, data, callback
 
-  _request: (method, uri, data, callback) ->
+  _xhrRequest: (method, uri, contentType, data, callback) ->
     request = new XMLHttpRequest();
     request.open(method, uri.toString(), true);
-    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+    request.setRequestHeader("Content-Type", contentType)
     request.onreadystatechange = (e) ->
       if(e.target.readyState == 4)
         callback(e.target.responseText, e.target)
     request.send(data);
 
+  _flashRequest: (method, uri, contentType, data, callback) ->
+    this.whenRecordingReady ->
+      Recorder.request method, uri.toString(), data, callback
+
   post:   (path, query, callback) ->
-    this.request("POST",   path, query, callback)
+    this._apiRequest("POST",   path, query, callback)
 
   put:    (path, query, callback) ->
-    this.request("PUT",    path, query, callback)
+    this._apiRequest("PUT",    path, query, callback)
 
   get:    (path, query, callback) ->
-    this.request("GET",    path, query, callback)
+    this._apiRequest("GET",    path, query, callback)
 
   delete: (path, callback) ->
-    this.request("DELETE", path, {}, callback)
+    this._apiRequest("DELETE", path, {}, callback)
 
   prepareRequestURI: (path, query={}) ->
     uri = new SC.URI(path, {"decodeQuery": true})
@@ -363,3 +365,4 @@ window.SC ||=
 
         SC.Helper.loadJavascript uri.toString(), ->
           document.body.removeChild(this)
+

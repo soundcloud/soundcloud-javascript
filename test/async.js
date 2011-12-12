@@ -1,4 +1,5 @@
 $(function(){
+  QUnit.config.reorder = false;
   SC.initialize({
     site: "soundcloud.dev",
     client_id: "YOUR_CLIENT_ID"
@@ -68,8 +69,33 @@ $(function(){
   });
 
   asyncTest("Handle a 404 error", 1, function(){
-    SC.get("/tracks/1", function(track, error){
+    SC.get("/tracks/0", function(track, error){
       equal(error.message, "404 - Not Found");
+      start();
+    });
+  });
+
+  asyncTest("Use private _request to create an attachment", 1, function(){
+    var boundary = "SOMERANDOMBOUNDARY";
+    var contentType = "multipart/mixed; boundary=" + boundary;
+    var body = "";
+
+    body += "--" + boundary + "\r\n";
+    body += "Content-Disposition: form-data; name=\"oauth_token\"\r\n";
+    body += "\r\n";
+    body += SC.accessToken() + "\r\n";
+
+    body += "--" + boundary + "\r\n";
+    body += "Content-Disposition: form-data; name=\"attachment[asset_data]\"; filename=\"attachment\"\r\n";
+    body += "Content-Type: application/octet-stream\r\n";
+    body += "\r\n";
+    body += "JSONPCALLBACK({a:1})\r\n";
+    body += "--" + boundary + "--\r\n";
+
+    var url = "https://" + SC.hostname("api") + "/tracks/" + fixtureTrackId + "/attachments.json";
+    SC._request("POST", url, contentType, body, function(responseText, xhr){
+      response = SC.Helper.responseHandler(responseText, xhr);
+      equals(response.json.size, 20);
       start();
     });
   });
