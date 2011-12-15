@@ -3,7 +3,7 @@
 #############################
 
 window.SC =
-  _version: "1.0.7"
+  _version: "1.0.8"
   options:
     site: "soundcloud.dev"
   connectCallbacks: {}
@@ -159,7 +159,8 @@ window.SC =
 
   _flashRequest: (method, uri, contentType, data, callback) ->
     this.whenRecordingReady ->
-      Recorder.request method, uri.toString(), contentType, data, callback
+      Recorder.request method, uri.toString(), contentType, data, (data, xhr) ->
+        callback(SC.Helper.externalInterfaceDecode(data), xhr)
 
   post:   (path, query, callback) ->
     this._apiRequest("POST",   path, query, callback)
@@ -231,7 +232,7 @@ window.SC =
       callback()
     else
       Recorder.initialize({
-        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder-0.5.swf?" + SC._version,
+        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder-0.6.swf?" + SC._version,
         initialized: () ->
           callback()
       })
