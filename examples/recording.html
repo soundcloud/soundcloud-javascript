@@ -80,25 +80,19 @@
   $("#upload").live("click", function(e){
     setRecorderUIState("uploading");
 
-    var upload = function(){
-      $("#uploadStatus").html("Uploading...");
-      SC.recordUpload({
-        track: {
-          title: "Untitled Recording",
-          sharing: "private"
-        }
-      }, function(track){
-        $("#uploadStatus").html("Uploaded: <a href='" + track.permalink_url + "'>" + track.permalink_url + "</a>");
-      });
-    }
-
-    if(SC.isConnected()){
-      upload();
-    }else{
-      SC.connect({
-        connected: upload
-      });
-    }
+    SC.connect({
+      connected: function(){
+        $("#uploadStatus").html("Uploading...");
+        SC.recordUpload({
+          track: {
+            title: "Untitled Recording",
+            sharing: "private"
+          }
+        }, function(track){
+          $("#uploadStatus").html("Uploaded: <a href='" + track.permalink_url + "'>" + track.permalink_url + "</a>");
+        });
+      }
+    });
 
     e.preventDefault();
   });
