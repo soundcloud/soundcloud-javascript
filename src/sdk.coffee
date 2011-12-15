@@ -108,7 +108,7 @@ window.SC =
     # track can be id, relative, absolute
     SC.whenStreamingReady ->
       options.id = "T" + trackId + "-" + Math.random()
-      options.url = "http://" + SC.hostname("api") + "/tracks/" + trackId + "/stream?client_id=YOUR_CLIENT_ID"
+      options.url = "http://" + SC.hostname("api") + "/tracks/" + trackId + "/stream?client_id=" + SC.options.client_id
       sound = soundManager.createSound(options)
       sound
 
