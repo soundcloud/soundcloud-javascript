@@ -15,7 +15,7 @@ $(function(){
       'client_secret': 'YOUR_CLIENT_SECRET',
       'grant_type':    'password',
       'username':      'js-sdk-test',
-      'password':      'js-sdk-test-pw',
+      'password':      'js-sdk-test-pw'
     }, function(response){
       accessToken = response.access_token;
       SC.accessToken(accessToken);
