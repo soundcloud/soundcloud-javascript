@@ -38,7 +38,7 @@ window.SC =
     SC.connectCallbacks.general    = options.callback
 
     if options.client_id && options.redirect_uri
-      uri = new SC.URI("https://" + this.hostname() + "/connect/?")
+      uri = new SC.URI("https://" + this.hostname() + "/connect?")
       uri.query = 
         client_id:      options.client_id
         redirect_uri:   options.redirect_uri
