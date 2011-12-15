@@ -159,7 +159,7 @@ window.SC =
 
   _flashRequest: (method, uri, contentType, data, callback) ->
     this.whenRecordingReady ->
-      Recorder.request method, uri.toString(), data, callback
+      Recorder.request method, uri.toString(), contentType, data, callback
 
   post:   (path, query, callback) ->
     this._apiRequest("POST",   path, query, callback)
@@ -231,7 +231,7 @@ window.SC =
       callback()
     else
       Recorder.initialize({
-        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder.swf?" + SC._version,
+        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder-0.5.swf?" + SC._version,
         initialized: () ->
           callback()
       })
