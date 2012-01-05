@@ -165,7 +165,7 @@ window.SC =
   _flashRequest: (method, uri, contentType, data, callback) ->
     this.whenRecordingReady ->
       Recorder.request method, uri.toString(), contentType, data, (data, xhr) ->
-        callback(SC.Helper.externalInterfaceDecode(data), xhr)
+        callback(Recorder._externalInterfaceDecode(data), xhr)
 
   post:   (path, query, callback) ->
     this._apiRequest("POST",   path, query, callback)
