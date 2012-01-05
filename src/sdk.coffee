@@ -129,6 +129,8 @@ window.SC =
 
     if SC.options.flashXHR
       SC.Helper.setFlashStatusCodeMaps(uri.query)
+    else
+      uri.query["_status_code_map[302]"] = 200
 
     if method == "PUT" || method == "DELETE"
       uri.query._method = method
@@ -140,7 +142,10 @@ window.SC =
 
     this._request method, uri, "application/x-www-form-urlencoded", data, (responseText, xhr) ->
       response = SC.Helper.responseHandler(responseText, xhr)
-      callback(response.json, response.error)
+      if response.json && response.json.status == "302 - Found"
+        SC._apiRequest("GET", response.json.location, callback)
+      else
+        callback(response.json, response.error)
 
   _request: (method, uri, contentType, data, callback) ->
     if SC.options.flashXHR

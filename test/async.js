@@ -100,12 +100,14 @@ $(function(){
     });
   });
 
-  /* not yet implemented */
-  //asyncTest("Handle a 302 redirect", 1, function(){
-  //  var permalink_url = "http://soundcloud.com/forss/flickermood";
-  //  SC.get("/resolve", {url: permalink_url}, function(track, error){
-  //    equal(track.permalink_url, permalink_url);
-  //    start();
-  //  });
-  //});
+  /* logged out tests */
+
+  asyncTest("Handle a 302 redirect", 1, function(){
+    SC.accessToken(null);
+    var permalink_url = "http://" + SC.hostname() + "/js-sdk-test/fixture-track";
+    SC.get("/resolve", {url: permalink_url}, function(track, error){
+      equal(track.permalink_url, permalink_url);
+      start();
+    });
+  });
 });
