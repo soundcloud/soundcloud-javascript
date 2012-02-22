@@ -273,7 +273,7 @@ window.SC =
       elem = document.createElement("script")
       elem.async = true
       elem.src = src
-      SC.Helper.attachEvent(elem, "load", callback)
+      SC.Helper.attachLoadEvent(elem, callback)
       document.body.appendChild(elem)
       elem
       
@@ -291,11 +291,13 @@ window.SC =
       options2.push(k + "=" + v) for own k, v of options
       window.open(url, "connectWithSoundCloud", options2.join(", "))
       
-    attachEvent: (element, eventName, func) ->
-      if element.attachEvent
-        element.attachEvent("on" + eventName, func)
-      else 
-        element.addEventListener(eventName, func, false)
+    attachLoadEvent: (element, func) ->
+      if element.addEventListener
+        element.addEventListener("load", func, false)
+      else
+        element.onreadystatechange = ->
+          if this.readyState == "complete"
+            func()
 
     millisecondsToHMS: (ms) ->
       hms = {
