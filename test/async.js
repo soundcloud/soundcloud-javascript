@@ -35,6 +35,7 @@ $(function(){
               title: trackTitle,
               sharing: "private"
             }}, function(track){
+              console.log("uploaded")
               fixtureTrackId = track.id;
               equal(track.title, trackTitle);
               start();
@@ -95,7 +96,7 @@ $(function(){
     var url = "https://" + SC.hostname("api") + "/tracks/" + fixtureTrackId + "/attachments.json";
     SC._request("POST", url, contentType, body, function(responseText, xhr){
       response = SC.Helper.responseHandler(responseText, xhr);
-      equals(response.json.size, 20);
+      equal(response.json.size, 20);
       start();
     });
   });
