@@ -237,7 +237,7 @@ window.SC =
       callback()
     else
       Recorder.initialize({
-        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder-0.6.swf?" + SC._version,
+        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder-0.7.swf?" + SC._version,
         initialized: () ->
           callback()
       })

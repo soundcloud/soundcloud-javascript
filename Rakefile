@@ -27,7 +27,7 @@ end
 task :build_static_recorder_js do
   sh "mkdir -p #{build_dir}/recorder.js"
   recorder_version = `cat static/recorder.js/VERSION`
-  sh "cp -R static/recorder.js/flash/bin-release/Recorder.swf #{build_dir}/recorder.js/recorder-#{recorder_version}.swf"
+  sh "cp -R static/recorder.js/flash/bin-release/SoundcloudRecorder.swf #{build_dir}/recorder.js/recorder-#{recorder_version}.swf"
   sh "cat static/recorder.js/recorder.js | closure-compiler >> #{build_dir}/sdk.js"
 end
 
