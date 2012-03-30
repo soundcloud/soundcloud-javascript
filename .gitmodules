@@ -1,18 +1,12 @@
-[submodule "static/soundmanager2"]
-	path = static/soundmanager2
+[submodule "vendor/soundmanager2"]
+	path = vendor/soundmanager2
 	url = git://github.com/scottschiller/SoundManager2.git
-[submodule "static/uri"]
-	path = static/uri
+[submodule "vendor/uri.js"]
+	path = vendor/uri.js
 	url = git@github.com:jwagener/uri.js.git
-[submodule "static/recorder"]
-	path = static/recorder
+[submodule "vendor/recorder.js"]
+	path = vendor/recorder.js
 	url = git@github.com:jwagener/recorder.js.git
-[submodule "static/recorder.js"]
-	path = static/recorder.js
-	url = git@github.com:jwagener/recorder.js.git
-[submodule "static/crossdomain-requests-js"]
-	path = static/crossdomain-requests-js
-	url = git@github.com:jwagener/crossdomain-requests-js.git
-[submodule "static/legacy"]
-	path = static/legacy
+[submodule "vendor/legacy"]
+	path = vendor/legacy
 	url = git@github.com:soundcloud/sc-connect.git

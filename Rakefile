@@ -2,44 +2,36 @@ task :help do
   puts "No Help. You are all on your own."
 end
 
-task :build => [:create_build_dir, :build_js, :build_static, :build_tests, :build_examples] do
+task :build => [:create_build_dir, :build_js, :build_vendor, :build_tests, :build_examples] do
 end
 
 task :create_build_dir do
   sh "mkdir -p #{build_dir}"
 end
 
-task :build_static => [:build_static_legacy, :build_static_recorder_js, :build_static_soundmanager, :build_static_uri] do
+task :build_vendor => [:build_vendor_legacy, :build_vendor_recorder_js, :build_vendor_soundmanager, :build_vendor_uri_js] do
 end
 
-task :build_static_legacy do
-  sh "cp -R static/legacy/* #{build_dir}"
+task :build_vendor_legacy do
+  sh "cp -R vendor/legacy/* #{build_dir}"
 end
 
-task :build_static_crossdomain_js do
-  sh "mkdir -p #{build_dir}/crossdomain-requests-js"
-  sh "cp -R static/crossdomain-requests-js/public/* #{build_dir}/crossdomain-requests-js"
-  sh "cp -R static/crossdomain-requests-js/crossdomain.xml #{build_dir}"
-
-  sh compress_cmd("#{build_dir}/crossdomain-requests-js/crossdomain-ajax.js", "#{build_dir}/crossdomain-requests-js/crossdomain-ajax.min.js")
-end
-
-task :build_static_recorder_js do
+task :build_vendor_recorder_js do
   sh "mkdir -p #{build_dir}/recorder.js"
-  recorder_version = `cat static/recorder.js/VERSION`
-  sh "cp -R static/recorder.js/flash/bin-release/SoundcloudRecorder.swf #{build_dir}/recorder.js/recorder-#{recorder_version}.swf"
-  sh "cat static/recorder.js/recorder.js | closure-compiler >> #{build_dir}/sdk.js"
+  recorder_version = `cat vendor/recorder.js/VERSION`
+  sh "cp -R vendor/recorder.js/flash/bin-release/SoundcloudRecorder.swf #{build_dir}/recorder.js/recorder-#{recorder_version}.swf"
+  sh "cat vendor/recorder.js/recorder.js | closure-compiler >> #{build_dir}/sdk.js"
 end
 
-task :build_static_soundmanager do 
+task :build_vendor_soundmanager do 
   sm_build_dir = "#{build_dir}/soundmanager2"
   sh "mkdir -p #{build_dir}/soundmanager2/script"
-  sh "cp -R static/soundmanager2/script/soundmanager2-nodebug-jsmin.js #{sm_build_dir}/soundmanager2.js"
-  sh "unzip -j -o static/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d #{sm_build_dir}"
+  sh "cp -R vendor/soundmanager2/script/soundmanager2-nodebug-jsmin.js #{sm_build_dir}/soundmanager2.js"
+  sh "unzip -j -o vendor/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d #{sm_build_dir}"
 end
 
-task :build_static_uri do
-  sh "cat static/uri/build/uri.js | sed -e 's/window.URI/window.SC.URI/g' | closure-compiler >> #{build_dir}/sdk.js"
+task :build_vendor_uri_js do
+  sh "cat vendor/uri.js/build/uri.js | sed -e 's/window.URI/window.SC.URI/g' | closure-compiler >> #{build_dir}/sdk.js"
 end
 
 task :build_tests do
