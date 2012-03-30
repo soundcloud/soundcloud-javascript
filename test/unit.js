@@ -69,4 +69,13 @@ $(document).ready(function(){
     store.removeItem("key");
     equal(store.getItem("key"), null);
   });
+
+  test("oEmbed", function(){
+    expectCallAndStub(SC, "_request", function(method, uri, contentType, data, cb){
+      equal(method, "GET");
+      equal(uri, "http://soundcloud.com/oembed.json?url=http%3A%2F%2Fsoundcloud.com%2Fforss%2Fflickermood");
+    });
+
+    SC.oEmbed("http://soundcloud.com/forss/flickermood", function(){});
+  });
 });

@@ -215,7 +215,7 @@ window.SC =
     query ||= {}
     query.url = trackUrl
 
-    uri = new SC.URI("http://" + SC.hostname("api") + "/oembed")
+    uri = new SC.URI("http://" + SC.hostname() + "/oembed.json")
     uri.query = query
 
     # rewrite callback if it's a DOM
@@ -224,7 +224,9 @@ window.SC =
        callback = (oembed) =>
          element.innerHTML = oembed.html
 
-    SC.Helper.JSONP.get(uri, callback)
+    @._request "GET", uri.toString(), null, null, (responseText, xhr) ->
+      response = SC.Helper.responseHandler(responseText, xhr)
+      callback(response.json, response.error)
 
 ############################
 # STORAGE                  #
@@ -363,17 +365,3 @@ window.SC =
           window.JSON.parse(string)
         else
           eval(string)
-    JSONP:
-      callbacks: {}
-      randomCallbackName: ->
-        "CB" + parseInt Math.random() * 999999, 10
-
-      get: (uri, callback) ->
-        callbackName        = this.randomCallbackName()
-        uri.query.format = "js"
-        uri.query.callback = "SC.Helper.JSONP.callbacks." + callbackName
-        SC.Helper.JSONP.callbacks[callbackName] = callback
-
-        SC.Helper.loadJavascript uri.toString(), ->
-          document.body.removeChild(this)
-
