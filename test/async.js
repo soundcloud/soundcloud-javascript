@@ -1,8 +1,8 @@
 $(function(){
   QUnit.config.reorder = false;
   SC.initialize({
-    site: "soundcloud.dev",
-    client_id: "YOUR_CLIENT_ID"
+    client_id: "YOUR_CLIENT_ID",
+    baseUrl: "" // use local, since running on the same host
   });
 
   /* the first 2 tests will setup the accessToken and fixture track */

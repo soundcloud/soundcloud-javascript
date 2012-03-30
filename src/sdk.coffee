@@ -4,8 +4,11 @@
 
 window.SC =
   _version: "1.0.13"
+  _recorderSwfPath: "/recorder.js/recorder-0.7.swf" #?" + SC._version
+  _soundmanagerPath: "/soundmanager2/"
   options:
-    site: "soundcloud.dev"
+    baseUrl: "http://connect.soundcloud.com"
+    site: "soundcloud.com"
   connectCallbacks: {}
   _popupWindow: undefined
 
@@ -91,7 +94,7 @@ window.SC =
     if window.soundManager
       callback()
     else
-      soundManagerURL = "http://" + this.hostname("connect") + "/soundmanager2/"
+      soundManagerURL = @.options.baseUrl + @._soundmanagerPath
       window.SM2_DEFER = true;
       SC.Helper.loadJavascript soundManagerURL + "soundmanager2.js", ->
         window.soundManager = new SoundManager()
@@ -237,7 +240,7 @@ window.SC =
       callback()
     else
       Recorder.initialize({
-        swfSrc: "http://" + this.hostname("connect") + "/recorder.js/recorder-0.7.swf?" + SC._version,
+        swfSrc: @.options.baseUrl + @._recorderSwfPath + "?" + @._version
         initialized: () ->
           callback()
       })
