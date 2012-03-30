@@ -35,10 +35,7 @@ task :build_vendor_uri_js do
 end
 
 task :build_tests do
-  sh "mkdir -p #{build_dir}/test"
-  
-  sh "cat test/async.js   #{replace_client_credentials_pipe if release?} > #{build_dir}/test/async.js"
-  sh "cat test/async.html #{replace_client_credentials_pipe if release?} > #{build_dir}/test/async.html"
+  sh "cp -r test #{build_dir}/test"
 end
 
 
@@ -63,12 +60,12 @@ task :clean do
 end
 
 task :test do
-  sh "open test/test.html"
+  sh "open test/unit.html"
 end
 
 task :test_live do
   sh "ponyhost server -p 4444 &"
-  sh "sleep 2 && open http://localhost:4444/test/live.html"
+  sh "sleep 2 && open http://localhost:4444/unit/live.html"
 end
 
 task :build_examples do
