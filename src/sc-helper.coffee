@@ -1,5 +1,11 @@
 window.SC ||= {}
 SC.Helper =
+  merge: (a, b) ->
+    newObj = {}
+    newObj[k] = v for own k,v of a
+    newObj[k] = v for own k,v of b
+    newObj
+
   loadJavascript: (src, callback) ->
     elem = document.createElement("script")
     elem.async = true
