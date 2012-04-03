@@ -1,6 +1,6 @@
 TestSuite = 
   compiledSrc: "../sdk.js"
-  srcs: ["../src/sdk.coffee", "../src/sc-helper.coffee"]
+  srcs: ["../src/helper.coffee", "../src/sc.coffee","../src/sc/api.coffee", "../src/sc/auth.coffee", "../src/sc/oembed.coffee", "../src/sc/record.coffee", "../src/sc/storage.coffee", "../src/sc/stream.coffee"]
   tests: ["unit/sc-helper-test.coffee"]
   initialize: () ->
     if TestSuite.inDevelopmentMode
