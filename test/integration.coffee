@@ -1,25 +1,26 @@
 module "Full Integration Test against api.soundcloud.com"
 
-QUnit.config.reorder = false
-QUnit.config.autorun = false
+fixtureTrackId = 42047077
+fixtureAccessToken = "1-4928-9174539-e8ed8a9e7bed36a43"
 
-fixtureTrackId = undefined
-accessToken = undefined
-asyncTest "Retrieve token using OAuth2", 1, ->
-  SC.accessToken null
-  SC.post "/oauth2/token",
-    client_id: "YOUR_CLIENT_ID"
-    client_secret: "YOUR_CLIENT_SECRET"
-    grant_type: "password"
-    username: "js-sdk-test"
-    password: "js-sdk-test-pw"
-  , (response) ->
-    accessToken = response.access_token
-    SC.accessToken accessToken
-    ok response.access_token
-    start()
+# Can be used to update accessToken
+#asyncTest "Retrieve token using OAuth2", 1, ->
+#  SC.accessToken null
+#  SC.post "/oauth2/token",
+#    client_id: "YOUR_CLIENT_ID"
+#    client_secret: "YOUR_CLIENT_SECRET"
+#    grant_type: "password"
+#    username: "js-sdk-test"
+#    password: "js-sdk-test-pw"
+#    scope: "non-expiring"
+#  , (response) ->
+#
+#    SC.accessToken accessToken
+#    ok response.access_token
+#    start()
 
 asyncTest "Audio Recording and Uploading", 2, ->
+  SC.accessToken(fixtureAccessToken)
   trackTitle = "JS SDK Test Recording"
   SC.record
     start: ->
@@ -31,7 +32,6 @@ asyncTest "Audio Recording and Uploading", 2, ->
           title: trackTitle
           sharing: "private"
       , (track) ->
-        fixtureTrackId = track.id
         equal track.title, trackTitle
         start()
 
@@ -43,6 +43,7 @@ asyncTest "Receive latest tracks", 1, ->
     start()
 
 asyncTest "Update a user description", 1, ->
+  SC.accessToken(fixtureAccessToken)
   randomDescription = "ABC: " + Math.random()
   SC.put "/me",
     user:
@@ -52,6 +53,7 @@ asyncTest "Update a user description", 1, ->
     start()
 
 asyncTest "Create a comment", 1, ->
+  SC.accessToken(fixtureAccessToken)
   commentBody = "Great Track"
   SC.post "/tracks/" + fixtureTrackId + "/comments",
     comment:
@@ -66,6 +68,7 @@ asyncTest "Handle a 404 error", 1, ->
     start()
 
 asyncTest "Use private _request to create an attachment", 1, ->
+  SC.accessToken(fixtureAccessToken)
   boundary = "SOMERANDOMBOUNDARY"
   contentType = "multipart/mixed; boundary=" + boundary
   body = ""
