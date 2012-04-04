@@ -33,9 +33,14 @@
     return mocking.stubs.push(stb);
   };
 
-  expectCallAndStub = function(obj, method, fn){
+  expectCallAndStub = function(obj, method, calls, fn){
+    if(fn === undefined){
+      fn = calls;
+      calls = 1;
+    }
+
     stub(obj, method, fn);
-    expectCall(obj, method);
+    expectCall(obj, method, calls);
   };
 
   expectCallWithArgumentsAndStub = function(obj, method, expectedArguments, fn){

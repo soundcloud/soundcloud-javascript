@@ -79,3 +79,17 @@ window.SC = SC.Helper.merge SC || {},
       uri.query.client_id    = this.options.client_id
 
     uri
+
+  _getAll: (path, query, callback) ->
+    if !callback?
+      callback = query
+      query = undefined
+    query ||= {}
+    query.offset ||= 0
+    query.limit  ||= 50
+
+    this.get path, query, (objects, error) ->
+      if objects.constructor == Array && objects.length > 0
+        query.offset += query.limit
+        SC._getAll(path, query, callback)
+      callback.apply(this, arguments);
