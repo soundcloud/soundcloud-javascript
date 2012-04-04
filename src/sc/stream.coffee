@@ -15,7 +15,16 @@ window.SC = SC.Helper.merge SC || {},
         soundManager.beginDelayedInit()
         soundManager.onready ->
           callback()
-  
+
+  _prepareStreamUrl: (idOrUrl) ->
+    if idOrUrl.toString().match /^\d.*$/ # legacy rewrite from id to path
+      url = "/tracks/" + idOrUrl
+    else
+      url = idOrUrl
+    preparedUrl = SC.prepareRequestURI(url)
+    preparedUrl.path += "/stream" if !preparedUrl.path.match(/\/stream/)
+    preparedUrl.toString()
+
   stream: (track, options={}) ->
     trackId = track
     # track can be id, relative, absolute
