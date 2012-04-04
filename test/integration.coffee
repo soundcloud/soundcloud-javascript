@@ -19,18 +19,21 @@ asyncTest "Retrieve token using OAuth2", 1, ->
     ok response.access_token
     start()
 
-asyncTest "Audio Recording and Uploading", 1, ->
+asyncTest "Audio Recording and Uploading", 2, ->
   trackTitle = "JS SDK Test Recording"
-  SC.record progress: ->
-    SC.recordStop()
-    SC.recordUpload
-      track:
-        title: trackTitle
-        sharing: "private"
-    , (track) ->
-      fixtureTrackId = track.id
-      equal track.title, trackTitle
-      start()
+  SC.record
+    start: ->
+      ok("start event fired")
+    progress: ->
+      SC.recordStop()
+      SC.recordUpload
+        track:
+          title: trackTitle
+          sharing: "private"
+      , (track) ->
+        fixtureTrackId = track.id
+        equal track.title, trackTitle
+        start()
 
 asyncTest "Receive latest tracks", 1, ->
   SC.get "/tracks",
