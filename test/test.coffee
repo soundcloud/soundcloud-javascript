@@ -1,7 +1,7 @@
 TestSuite = 
   compiledSrc: "../sdk.js"
   srcs: ["../src/helper.coffee", "../src/sc.coffee","../src/sc/api.coffee", "../src/sc/auth.coffee", "../src/sc/oembed.coffee", "../src/sc/record.coffee", "../src/sc/storage.coffee", "../src/sc/stream.coffee"]
-  tests: ["unit/sc-helper-test.coffee", "integration.coffee"]
+  tests: ["helper-test.coffee", "sc-test.coffee", "integration.coffee"]
   initialize: () ->
     if TestSuite.inDevelopmentMode
       @loadJavascript "../vendor/recorder.js/recorder.js"

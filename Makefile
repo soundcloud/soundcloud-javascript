@@ -30,7 +30,7 @@ build_examples:
 
 build_tests:
 	cp -R test build/
-	cat test/test_suite.coffee | sed -e 's/TestSuite.inDevelopmentMode = true/TestSuite.inDevelopmentMode = false/g' > build/test/test_suite.coffee
+	cat test/test.coffee | sed -e 's/TestSuite.inDevelopmentMode = true/TestSuite.inDevelopmentMode = false/g' > build/test/test.coffee
 
 minify:
 	closure-compiler --js build/sdk.tmp.js > build/sdk.js
