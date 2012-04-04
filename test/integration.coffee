@@ -21,19 +21,16 @@ asyncTest "Retrieve token using OAuth2", 1, ->
 
 asyncTest "Audio Recording and Uploading", 1, ->
   trackTitle = "JS SDK Test Recording"
-  SC.record start: ->
-    window.setTimeout (->
-      SC.recordStop()
-      SC.recordUpload
-        track:
-          title: trackTitle
-          sharing: "private"
-      , (track) ->
-        console.log "uploaded"
-        fixtureTrackId = track.id
-        equal track.title, trackTitle
-        start()
-    ), 2000
+  SC.record progress: ->
+    SC.recordStop()
+    SC.recordUpload
+      track:
+        title: trackTitle
+        sharing: "private"
+    , (track) ->
+      fixtureTrackId = track.id
+      equal track.title, trackTitle
+      start()
 
 asyncTest "Receive latest tracks", 1, ->
   SC.get "/tracks",
