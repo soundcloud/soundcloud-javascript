@@ -6,7 +6,7 @@
     <link href="http://importer.soundcloudlabs.com/stylesheets/labs.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="examples.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>    
     <script src="examples.js"></script>
@@ -34,24 +34,16 @@
           <div class="example"><script src="http://connect.soundcloud.dev/sdk.js"></script>  
 <script>
   SC.initialize({
-    client_id: "f7d8c67ee9db444f6c66e50685611fed",
-    redirect_uri: "http://connect.soundcloud.dev/examples/callback.html"
+    client_id: "c202b469a633a7a5b15c9e10b5272b78",
+    redirect_uri: "http://connect.soundcloud.com/examples/callback.html"
   });
-
-  function getUserDetails(){
-    SC.get("/me", function(me){
-      $("#username").text(me.username);
-      $("#description").val(me.description);
-    });
-  }
-
-  if(SC.isConnected()){
-    getUserDetails();
-  }
 
   $("#connect").live("click", function(){
     SC.connect(function(){
-      getUserDetails();
+      SC.get("/me", function(me){
+        $("#username").text(me.username);
+        $("#description").val(me.description);
+      });
     });
   });
 
