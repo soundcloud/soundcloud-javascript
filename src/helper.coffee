@@ -1,10 +1,15 @@
 window.SC ||= {}
 SC.Helper =
   merge: (a, b) ->
-    newObj = {}
-    newObj[k] = v for own k,v of a
-    newObj[k] = v for own k,v of b
-    newObj
+    if a.constructor == Array
+      newObj = Array.apply(null, a)
+      newObj.push(v) for own v in b
+      newObj
+    else
+      newObj = {}
+      newObj[k] = v for own k,v of a
+      newObj[k] = v for own k,v of b
+      newObj
 
   loadJavascript: (src, callback) ->
     elem = document.createElement("script")
