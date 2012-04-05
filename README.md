@@ -16,17 +16,16 @@ This README provides development related informations.
 ## Development Dependencies
 
 - Google Closure Compiler
+- CoffeeScript
 
-## Tasks
+## Build
 
-Will build the development in build/development
+To build the release version in build/ just run:
 
-    $ rake build
+    $ make build
 
-Will build the minified release in build/release
+## Testing
 
-    $ rake build TARGET=release
-
-
-
-
+To run the tests just start an HTTP server (for example "$ ponyhost server") in the project root and navigate to http://yourhost/test/test.html.
+In development mode the tests will automatically compile the coffeescript on each reload.
+In build mode the tests will laod the compiled sdk.js.
