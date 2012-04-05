@@ -80,16 +80,18 @@ window.SC = SC.Helper.merge SC || {},
 
     uri
 
-  _getAll: (path, query, callback) ->
+  _getAll: (path, query, callback, collection=[]) ->
     if !callback?
       callback = query
       query = undefined
     query ||= {}
     query.offset ||= 0
     query.limit  ||= 50
-
     this.get path, query, (objects, error) ->
       if objects.constructor == Array && objects.length > 0
+        collection = SC.Helper.merge(collection, objects)
         query.offset += query.limit
-        SC._getAll(path, query, callback)
-      callback.apply(this, arguments);
+        SC._getAll(path, query, callback, collection)
+      else
+        callback(collection, null)
+        #callback.apply(this, arguments);
