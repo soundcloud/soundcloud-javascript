@@ -100,7 +100,7 @@ SC.Helper =
       setItem: (key, value) ->
         this._store[key] = value.toString()
       removeItem: (key) ->
-        delete this._store.key
+        delete this._store[key]
     }
   JSON:
     parse: (string) ->
