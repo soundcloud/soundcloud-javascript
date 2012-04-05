@@ -1,5 +1,5 @@
 window.SC = SC.Helper.merge SC || {},
-  _version: "1.0.13"
+  _version: "1.1.0"
   options:
     baseUrl: "http://connect.soundcloud.com"
     site: "soundcloud.com"
