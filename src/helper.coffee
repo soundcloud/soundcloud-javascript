@@ -11,6 +11,14 @@ SC.Helper =
       newObj[k] = v for own k,v of b
       newObj
 
+  groupBy: (collection, attribute) ->
+    group = {}
+    for object in collection
+      if value = object[attribute]
+        group[object[attribute]] ||= []
+        group[object[attribute]].push(object)
+    group
+
   loadJavascript: (src, callback) ->
     elem = document.createElement("script")
     elem.async = true

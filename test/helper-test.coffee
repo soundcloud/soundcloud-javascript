@@ -5,3 +5,12 @@ test "Shallow merge 2 objects with the 2nd taking precedence", () ->
 
 test "Shallow merge 2 arrays", () ->
   deepEqual SC.Helper.merge([1, 2, 3], [4, 5]), [1, 2, 3, 4, 5]
+
+module "SC.Helper.groupBy"
+
+test "It should group objects by a property", ->
+  collection = [{a: 1}, {a: 1}, {a: 2}, {a: 2}, {a: 2}, {a: null}]
+  expected =
+    "1": [{a: 1}, {a: 1}]
+    "2": [{a: 2}, {a: 2}, {a: 2}]
+  deepEqual SC.Helper.groupBy(collection, "a"), expected
