@@ -1,7 +1,9 @@
 module "Full Integration Test against api.soundcloud.com"
 
-fixtureTrackId = 42047077
+fixtureTrackId = 41948537
 fixtureAccessToken = "1-4928-9174539-e8ed8a9e7bed36a43"
+fixturePrivateTrackId = 41948548
+fixturePrivateTrackToken = "s-2gxGq"
 
 # Can be used to update accessToken
 #asyncTest "Retrieve token using OAuth2", 1, ->
@@ -97,4 +99,24 @@ asyncTest "Handle a 302 redirect", 1, ->
     equal track.permalink_url, permalink_url
     start()
 
-QUnit.start()
+module "SC.stream"
+
+asyncTest "Playback of a track by id within whenStreamingReady with an ontimedcomment", 2, ->
+  SC.whenStreamingReady ->
+    sound = SC.stream fixtureTrackId,
+      autoPlay: true
+      volume: 0
+      ontimedcomments: (comments) ->
+        equal(2, comments.length, "A timedcomments event was fired")
+        start()
+      onplay: () ->
+        ok(true, "Playback started")
+
+asyncTest "Playback of a private track using a secret token", 1, ->
+  SC.stream "/tracks/" + fixturePrivateTrackId + "?secret_token=" + fixturePrivateTrackToken, 
+    autoPlay: true
+    volume: 0
+    onload: () ->
+      this.stop()
+      ok(true, "Track Stream Loaded")
+      start()

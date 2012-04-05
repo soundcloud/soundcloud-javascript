@@ -26,14 +26,37 @@ window.SC = SC.Helper.merge SC || {},
     preparedUrl.path += "/stream" if !preparedUrl.path.match(/\/stream/)
     preparedUrl.toString()
 
-  stream: (track, options={}) ->
-    trackId = track
-    # track can be id, relative, absolute
-    SC.whenStreamingReady ->
-      options.id = "T" + trackId + "-" + Math.random()
-      options.url = "http://" + SC.hostname("api") + "/tracks/" + trackId + "/stream?client_id=" + SC.options.client_id
-      sound = soundManager.createSound(options)
-      sound
+  _setOnPositionListenersForComments: (sound, comments, callback) ->
+    group = SC.Helper.groupBy(comments, "timestamp")
+    for timestamp, commentBatch of group
+      do (timestamp, commentBatch, callback) ->
+        sound.onposition parseInt(timestamp, 10), () ->
+          callback(commentBatch)
+
+  stream: (idOrUrl, optionsOrCallback, callback) ->
+    if callback?                                    # for stream(id, opt, cb)
+      options = optionsOrCallback
+    else if typeof(optionsOrCallback) == "function" # for stream(id, cb)
+      callback = optionsOrCallback
+    else
+      options = optionsOrCallback || {}             # for stream(id, opt) || stream(id)
+
+    SC.whenStreamingReady =>
+      options.id = "T" + idOrUrl + "-" + Math.random()
+      options.url = @_prepareStreamUrl(idOrUrl)
+
+      createAndCallback = (options) =>
+        sound = soundManager.createSound(options)
+        callback(sound) if callback?
+        sound
+
+      if ontimedcommentsCallback = options.ontimedcomments
+        delete options.ontimedcomments
+        SC._getAll options.url.replace("/stream", "/comments"), (comments) =>
+          sound = createAndCallback(options)
+          @_setOnPositionListenersForComments(sound, comments, ontimedcommentsCallback)
+      else
+        createAndCallback(options)
 
   streamStopAll: ->
     if window.soundManager?
