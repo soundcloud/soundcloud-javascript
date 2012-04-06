@@ -23,7 +23,7 @@ TestSuite =
         SC.initialize
           client_id: "YOUR_CLIENT_ID"
           baseUrl: "../vendor"
-        SC._recorderSwfPath = "/recorder.js/recorder.swf"
+        SC._recorderSwfPath = "/recorder.js/flash/bin-release/SoundcloudRecorder.swf"
         SC._soundmanagerPath = "/soundmanager2/swf/"
         SC._soundmanagerScriptPath = "../script/soundmanager2-nodebug-jsmin.js"
         @loadCoffeescripts @tests
