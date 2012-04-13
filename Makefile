@@ -6,7 +6,7 @@ prepare_build_dir:
 
 build_recorder_js:
 	mkdir -p build/recorder.js
-	cp vendor/recorder.js/flash/bin-release/SoundcloudRecorder.swf build/recorder.js/recorder-`cat vendor/recorder.js/VERSION`.swf
+	cp vendor/recorder.js/soundcloudRecorder.swf build/recorder.js/recorder-`cat vendor/recorder.js/VERSION`.swf
 	cat vendor/recorder.js/recorder.js >> build/sdk.tmp.js
 
 build_soundmanager2:

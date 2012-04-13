@@ -22,15 +22,16 @@ TestSuite =
       @loadCoffeescripts @srcs, () =>
         SC.initialize
           client_id: "YOUR_CLIENT_ID"
+          redirect_uri: "/examples/callback.html"
           baseUrl: "../vendor"
-        SC._recorderSwfPath = "/recorder.js/flash/bin-release/SoundcloudRecorder.swf"
+        SC._recorderSwfPath = "/recorder.js/soundcloudRecorder.swf"
         SC._soundmanagerPath = "/soundmanager2/swf/"
         SC._soundmanagerScriptPath = "../script/soundmanager2-nodebug-jsmin.js"
         @loadCoffeescripts @tests
     else
       @loadJavascript @compiledSrc, () =>
         SC.initialize
-          client_id: "YOUR_CLIENT_ID"
+          client_id:  "YOUR_CLIENT_ID"
           baseUrl: ""
         @loadCoffeescripts(@tests)
 
