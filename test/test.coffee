@@ -1,6 +1,5 @@
 TestSuite = 
   compiledSrc: "../sdk.js"
-  srcs: ["../src/helper.coffee", "../src/sc.coffee","../src/sc/api.coffee", "../src/sc/connect.coffee", "../src/sc/oembed.coffee", "../src/sc/record.coffee", "../src/sc/storage.coffee", "../src/sc/stream.coffee"]
   tests: ["helper-test.coffee", "sc-test.coffee", "sc/api-test.coffee", "sc/stream-test.coffee", "integration.coffee"]
 
   setTestsFromParams: ->
@@ -21,7 +20,7 @@ TestSuite =
           redirect_uri: "/examples/callback.html"
           baseUrl: "../vendor"
         @loadCoffeescripts @tests
-      @loadJavascript "../sdk.js"
+      @loadJavascript @compiledSrc
     else
       @loadJavascript @compiledSrc, () =>
         SC.initialize
