@@ -13,21 +13,15 @@ TestSuite =
       SC.accessToken(null)
 
     if TestSuite.inDevelopmentMode
-      @loadJavascript "../vendor/recorder.js/recorder.js"
-      @loadJavascript "../vendor/uri.js/build/uri.js", () =>
-        window.SC ||= {}
-        SC.URI = URI
+      window.SC_DEV_SDK_READY = () =>
         @setTestsFromParams()
 
-      @loadCoffeescripts @srcs, () =>
         SC.initialize
           client_id: "YOUR_CLIENT_ID"
           redirect_uri: "/examples/callback.html"
           baseUrl: "../vendor"
-        SC._recorderSwfPath = "/recorder.js/soundcloudRecorder.swf"
-        SC._soundmanagerPath = "/soundmanager2/swf/"
-        SC._soundmanagerScriptPath = "../script/soundmanager2-nodebug-jsmin.js"
         @loadCoffeescripts @tests
+      @loadJavascript "../sdk.js"
     else
       @loadJavascript @compiledSrc, () =>
         SC.initialize
