@@ -34,12 +34,8 @@ window.SC = SC.Helper.merge SC || {},
           callback(commentBatch)
 
   stream: (idOrUrl, optionsOrCallback, callback) ->
-    if callback?                                    # for stream(id, opt, cb)
-      options = optionsOrCallback
-    else if typeof(optionsOrCallback) == "function" # for stream(id, cb)
-      callback = optionsOrCallback
-    else
-      options = optionsOrCallback || {}             # for stream(id, opt) || stream(id)
+    a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
+    options = a.options; callback = a.callback
 
     SC.whenStreamingReady =>
       options.id = "T" + idOrUrl + "-" + Math.random()

@@ -14,3 +14,29 @@ test "It should group objects by a property", ->
     "1": [{a: 1}, {a: 1}]
     "2": [{a: 2}, {a: 2}, {a: 2}]
   deepEqual SC.Helper.groupBy(collection, "a"), expected
+
+module "SC.Helper.extractOptionsAndCallbackArguments"
+test "passing only a callback", ->
+  fn = (new Function)
+  a = SC.Helper.extractOptionsAndCallbackArguments(fn)
+  console.log(a.options)
+  deepEqual(a.options, {})
+  equal(a.callback, fn)
+
+test "passing options and callback", ->
+  fn = (new Function)
+  options = {a: 1}
+  a = SC.Helper.extractOptionsAndCallbackArguments(options, fn)
+  deepEqual(a.options, options)
+  equal(a.callback, fn)
+
+test "passing only options", ->
+  options = {a: 1}
+  a = SC.Helper.extractOptionsAndCallbackArguments(options)
+  deepEqual(a.options, options)
+  equal(a.callback, undefined)
+
+test "passing nothing", ->
+  a = SC.Helper.extractOptionsAndCallbackArguments()
+  deepEqual(a.options, {})
+  equal(a.callback, undefined)

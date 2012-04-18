@@ -26,7 +26,19 @@ SC.Helper =
     SC.Helper.attachLoadEvent(elem, callback)
     document.body.appendChild(elem)
     elem
-    
+
+  extractOptionsAndCallbackArguments: (optionsOrCallback, callback) ->
+    args = {}
+    if callback?                                    # for (opt, cb)
+      args.callback = callback
+      args.options = optionsOrCallback
+    else if typeof(optionsOrCallback) == "function" # for (cb)
+      args.callback = optionsOrCallback
+      args.options = {}
+    else
+      args.options = optionsOrCallback || {}        # for (opt) || ()
+    args
+
   openCenteredPopup: (url, width, height) ->
     options =
       location: 1
