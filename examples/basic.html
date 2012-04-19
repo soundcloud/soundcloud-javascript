@@ -9,7 +9,24 @@
     <script src="examples.js"></script>
   </head>
   <body>
-    
+<textarea class="exampleSource"><script src="http://connect.soundcloud.com/sdk.js"></script>
+<script>
+  SC.initialize({
+    client_id: "YOUR_CLIENT_ID"
+  });
+
+  $("#loadTracks").live("click", function(){
+    SC.get("/tracks", {limit: 1}, function(tracks){
+      var track = tracks[0];
+      SC.oEmbed(track.uri, document.getElementById("track"));
+    });
+  });
+</script>
+
+<input type="button" id="loadTracks" class="button big" value="Get hottest track" />
+<div id="track"></div>
+
+</textarea>
     <div id="page">
       <div id="header">
         <a href="/"><h1>SoundCloud JavaScript SDK - Basic Example</h1></a>
@@ -30,25 +47,8 @@
             
             
           <p>This example demonstrates how to <b>load the hottest track</b> on SoundCloud and <b>embed it using oEmbed</b>. </p>
-          <div class="example"><script src="http://connect.soundcloud.com/sdk.js"></script>
-<script>
-  SC.initialize({
-    client_id: "YOUR_CLIENT_ID"
-  });
 
-  $("#loadTracks").live("click", function(){
-    SC.get("/tracks", {limit: 1}, function(tracks){
-      var track = tracks[0];
-      SC.oEmbed(track.uri, document.getElementById("track"));
-    });
-  });
-</script>
-
-<input type="button" id="loadTracks" class="button big" value="Get hottest track" />
-<div id="track"></div>
-
-
-          </div>
+          <div class="example"></div>
         </div>
         <div id="right"><pre><code></code></pre></div>
       </div>

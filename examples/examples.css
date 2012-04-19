@@ -1,3 +1,7 @@
+.exampleSource {
+  display: none;
+}
+
 #left, #right {
   width: 45%;
   float: left;

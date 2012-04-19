@@ -12,26 +12,7 @@
     <script src="examples.js"></script>
   </head>
   <body>
-    
-    <div id="page">
-      <div id="header">
-        <a href="/"><h1>SoundCloud JavaScript SDK Examples</h1></a>
-      </div>
-      <div class="content">
-        <div class="tab-ui">
-          <ul class="tabs">
-            <li class="first"><a href="basic.html">Basic</a></li>
-            <li class="first current"><a href="connecting.html">Connecting</a></li>
-            <li class="first"><a href="streaming.html">Streaming</a></li>
-            <li class="first"><a href="recording.html">Recording</a></li>
-          </ul>
-        </div>
-        <div id="left">
-          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
-            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
-          
-          <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
-          <div class="example"><script src="http://connect.soundcloud.com/sdk.js"></script>  
+<textarea class="exampleSource"><script src="http://connect.soundcloud.com/sdk.js"></script>  
 <script>
   SC.initialize({
     client_id: "c202b469a633a7a5b15c9e10b5272b78",
@@ -65,10 +46,29 @@
   Logged in as: <span id="username"></span>
   </p>
   Your profile description:
-  <textarea id="description" class="fullWidth"></textarea>
+  <input type="text" id="description" class="fullWidth" />
   <button id="update" class="big button">Update your profile description</button>
 </div>
-
+</textarea>
+    <div id="page">
+      <div id="header">
+        <a href="/"><h1>SoundCloud JavaScript SDK Examples</h1></a>
+      </div>
+      <div class="content">
+        <div class="tab-ui">
+          <ul class="tabs">
+            <li class="first"><a href="basic.html">Basic</a></li>
+            <li class="first current"><a href="connecting.html">Connecting</a></li>
+            <li class="first"><a href="streaming.html">Streaming</a></li>
+            <li class="first"><a href="recording.html">Recording</a></li>
+          </ul>
+        </div>
+        <div id="left">
+          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
+            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
+          
+          <p>This example demonstrates triggering the connect flow, retrieving information about the logged in user and updating the description of a users profile. </p>
+          <div class="example">
           </div>
         </div>
         <div id="right"><pre><code></code></pre></div>

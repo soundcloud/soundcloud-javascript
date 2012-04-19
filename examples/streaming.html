@@ -12,7 +12,19 @@
     <script src="examples.js"></script>
   </head>
   <body>
-    
+<textarea class="exampleSource"><script src="http://connect.soundcloud.com/sdk.js"></script>
+<script>
+  SC.initialize({
+    client_id: "YOUR_CLIENT_ID"
+  });
+  
+  $("#stream").live("click", function(){
+    SC.stream("/tracks/293", {autoPlay: true});
+  });
+</script>
+
+<input type="button" href="#" id="stream" class="big button" value="Stream It Again, Sam" />
+</textarea>
     <div id="page">
       <div id="header">
         <a href="/"><h1>SoundCloud JavaScript SDK Examples</h1></a>
@@ -32,19 +44,7 @@
             For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
             
           <p>This example demonstrates how to stream a track from SoundCloud. </p>
-          <div class="example"><script src="http://connect.soundcloud.com/sdk.js"></script>
-<script>
-  SC.initialize({
-    client_id: "YOUR_CLIENT_ID"
-  });
-  
-  $("#stream").live("click", function(){
-    SC.stream("/tracks/293", {autoPlay: true});
-  });
-</script>
-
-<input type="button" href="#" id="stream" class="big button" value="Stream It Again, Sam" />
-
+          <div class="example">
           </div>
         </div>
         <div id="right"><pre><code></code></pre></div>
