@@ -24,10 +24,11 @@ loadJavascript "../vendor/uri.js/build/uri.js", () =>                           
                                                                                   \n\
 srcs = ["/src/helper.coffee", "/src/sc.coffee", "/src/sc/ui.coffee", "/src/sc/api.coffee", "/src/sc/connect.coffee", "/src/sc/oembed.coffee", "/src/sc/record.coffee", "/src/sc/storage.coffee", "/src/sc/stream.coffee"] \n\
 loadCoffeescripts srcs, () =>                                                     \n\
-  SC._recorderSwfPath = "/recorder.js/soundcloudRecorder.swf"                     \n\
-  SC._soundmanagerPath = "/soundmanager2/swf/"                                    \n\
-  SC._soundmanagerScriptPath = "../script/soundmanager2-nodebug-jsmin.js"         \n\
-  window.SC_DEV_SDK_READY() if window.SC_DEV_SDK_READY?                                   \n\
+  SC._baseUrl = "http://connect.soundcloud.dev"                                   \n\
+  SC._recorderSwfPath = "/vendor/recorder.js/soundcloudRecorder.swf"              \n\
+  SC._soundmanagerPath = "/vendor/soundmanager2"                                  \n\
+  SC._soundmanagerScriptPath = "/script/soundmanager2-nodebug-jsmin.js"           \n\
+  window.SC_DEV_SDK_READY() if window.SC_DEV_SDK_READY?                           \n\
 ';
 
 CoffeeScript.eval(src)

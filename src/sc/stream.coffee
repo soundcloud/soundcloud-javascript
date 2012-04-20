@@ -1,15 +1,15 @@
 window.SC = SC.Helper.merge SC || {},
-  _soundmanagerPath: "/soundmanager2/"
-  _soundmanagerScriptPath: "soundmanager2.js"
+  _soundmanagerPath: "/soundmanager2"
+  _soundmanagerScriptPath: "/soundmanager2.js"
   whenStreamingReady: (callback) ->
     if window.soundManager
       callback()
     else
-      soundManagerURL = @.options.baseUrl + @._soundmanagerPath
+      soundManagerURL = @_baseUrl + @._soundmanagerPath
       window.SM2_DEFER = true;
       SC.Helper.loadJavascript soundManagerURL + @_soundmanagerScriptPath, ->
         window.soundManager = new SoundManager()
-        soundManager.url = soundManagerURL;
+        soundManager.url = soundManagerURL + "/swf";
         soundManager.flashVersion = 9;
         soundManager.useFlashBlock = false;
         soundManager.useHTML5Audio = false;
