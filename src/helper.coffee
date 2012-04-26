@@ -40,19 +40,27 @@ SC.Helper =
     args
 
   openCenteredPopup: (url, width, height) ->
-    options =
+    options = {}
+    if height?
+      options.width = width
+      options.height = height
+    else # threat width as options
+      options = width
+
+    options = SC.Helper.merge options,
       location: 1
-      width: width
-      height: height
       left: window.screenX + (window.outerWidth  - width)  / 2
       top:  window.screenY + (window.outerHeight - height) / 2
       toolbar: "no"
       scrollbars: "yes"
-    
-    options2 = []
-    options2.push(k + "=" + v) for own k, v of options
-    window.open(url, "connectWithSoundCloud", options2.join(", "))
-    
+
+    window.open(url, options.name, @_optionsToString(options))
+
+  _optionsToString: (options) ->
+    optionsArray = []
+    optionsArray.push(k + "=" + v) for own k, v of options
+    optionsArray.join(", ")
+
   attachLoadEvent: (element, func) ->
     if element.addEventListener
       element.addEventListener("load", func, false)
