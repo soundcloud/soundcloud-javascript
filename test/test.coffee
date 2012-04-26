@@ -12,14 +12,12 @@ TestSuite =
       SC.accessToken(null)
 
     if TestSuite.inDevelopmentMode
-      window.SC_DEV_SDK_READY = () =>
+      @loadJavascript @compiledSrc, =>
         @setTestsFromParams()
-
         SC.initialize
           client_id: "YOUR_CLIENT_ID"
           redirect_uri: "/examples/callback.html"
         @loadCoffeescripts @tests
-      @loadJavascript @compiledSrc
     else
       @loadJavascript @compiledSrc, () =>
         SC.initialize
