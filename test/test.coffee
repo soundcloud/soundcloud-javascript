@@ -1,6 +1,6 @@
 TestSuite = 
   compiledSrc: "../sdk.js"
-  tests: ["helper-test.coffee", "sc-test.coffee", "sc/api-test.coffee", "sc/stream-test.coffee", "integration.coffee"]
+  tests: ["helper-test.coffee", "sc-test.coffee", "sc/api-test.coffee", "sc/stream-test.coffee", "integration.coffee", "sc/dialog-test.coffee"]
 
   setTestsFromParams: ->
     loc = new URI location, decodeQuery: true

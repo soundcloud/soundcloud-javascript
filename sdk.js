@@ -29,6 +29,7 @@ loadJavascript "/vendor/uri.js/build/uri.js", () =>                             
                                                                                   \n\
 loadCoffeescripts srcs, () =>                                                     \n\
   SC._baseUrl = "http://connect.soundcloud.dev"                                   \n\
+  SC._dialogsPath = "/vendor/dialogs"                                             \n\
   SC._recorderSwfPath = "/vendor/recorder.js/soundcloudRecorder.swf"              \n\
   SC._soundmanagerPath = "/vendor/soundmanager2"                                  \n\
   SC._soundmanagerScriptPath = "/script/soundmanager2-nodebug-jsmin.js"           \n\
