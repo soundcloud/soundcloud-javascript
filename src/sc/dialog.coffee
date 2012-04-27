@@ -30,7 +30,8 @@ window.SC = SC.Helper.merge SC || {},
     _handleDialogReturn: (window) ->
       callback = @_dialogCallbacks[window.name]
       if callback?
-        options = new SC.URI(window.location, decodeFragment: true).fragment
+        url = new SC.URI(window.location, decodeFragment: true, decodeQuery: true)
+        options = SC.Helper.merge(url.query, url.fragment)
         window.close()
         callback(options)
         delete @_dialogCallbacks[window.name]
@@ -48,6 +49,12 @@ window.SC = SC.Helper.merge SC || {},
       switch(dialogName)
         when SC.Dialog.ECHO
           url.path += SC._dialogsPath + "/" + SC.Dialog.ECHO
+        when SC.Dialog.CONNECT
+          url.scheme = "https"
+          url.host = "soundcloud.com"
+          url.path = "/connect"
+          url.query = url.fragment
+          url.fragment = {}
       url.toString()
 
 SC.Dialog._handleInPopupContext()
