@@ -20,10 +20,13 @@ build_uri_js:
 build_legacy:
 	cp -R vendor/legacy/* build/
 
-build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_legacy
+build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
 
 build_coffee:
 	coffee --join build/sdk.tmp.js --compile src/*.coffee src/sc/*.coffee
+
+build_dialogs:
+	cp -R vendor/dialogs
 
 build_examples:
 	cp -R examples build/
