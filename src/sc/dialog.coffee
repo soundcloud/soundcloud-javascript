@@ -49,6 +49,9 @@ window.SC = SC.Helper.merge SC || {},
       switch(dialogName)
         when SC.Dialog.ECHO
           url.path += SC._dialogsPath + "/" + SC.Dialog.ECHO
+        when SC.Dialog.PICKER
+          url.path += SC._dialogsPath + "/" + SC.Dialog.PICKER
+          url.fragment.access_token = SC.accessToken()
         when SC.Dialog.CONNECT
           url.scheme = "https"
           url.host = "soundcloud.com"
