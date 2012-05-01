@@ -1,4 +1,5 @@
 window.SC = SC.Helper.merge SC || {},
+  _connectWindow: null
   connect: (optionsOrCallback) ->
     if typeof(optionsOrCallback) == "function"
       options =
@@ -6,15 +7,15 @@ window.SC = SC.Helper.merge SC || {},
     else
       options = optionsOrCallback
 
-    if options.client_id && options.redirect_uri
-      dialogOptions =
-        client_id:      options.client_id || SC.options.client_id
-        redirect_uri:   options.redirect_uri || SC.options.redirect_uri
-        response_type:  "code_and_token"
-        scope:          options.scope || "non-expiring"
-        display:        "popup"
+    dialogOptions =
+      client_id:      options.client_id || SC.options.client_id
+      redirect_uri:   options.redirect_uri || SC.options.redirect_uri
+      response_type:  "code_and_token"
+      scope:          options.scope || "non-expiring"
+      display:        "popup"
 
-      SC.dialog SC.Dialog.CONNECT, dialogOptions, (returnOptions) ->
+    if dialogOptions.client_id && dialogOptions.redirect_uri
+      @_connectWindow = SC.dialog SC.Dialog.CONNECT, dialogOptions, (returnOptions) ->
         if returnOptions.error?
           throw new Error("SC OAuth2 Error: " + returnOptions.error_description)
         else
@@ -25,7 +26,7 @@ window.SC = SC.Helper.merge SC || {},
       throw "Either client_id and redirect_uri (for user agent flow) must be passed as an option"
 
   connectCallback: ->
-    SC.Dialog._handleDialogReturn(window)
+    SC.Dialog._handleDialogReturn(SC._connectWindow)
 
   disconnect: ->
     this.accessToken(null);
