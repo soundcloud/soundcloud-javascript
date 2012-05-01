@@ -26,14 +26,14 @@ build_coffee:
 	coffee --join build/sdk.tmp.js --compile src/*.coffee src/sc/*.coffee
 
 build_dialogs:
-	cp -R vendor/dialogs
+	mkdir -p build/dialogs
+	cp -R vendor/dialogs/* build/dialogs/
 
 build_examples:
 	cp -R examples build/
 
 build_tests:
 	cp -R test build/
-	cat test/test.coffee | sed -e 's/TestSuite.inDevelopmentMode = true/TestSuite.inDevelopmentMode = false/g' > build/test/test.coffee
 
 minify:
 	closure-compiler --js build/sdk.tmp.js > build/sdk.js
