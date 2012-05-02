@@ -7,7 +7,7 @@ prepare_build_dir:
 build_recorder_js:
 	mkdir -p build/recorder.js
 	cp vendor/recorder.js/soundcloudRecorder.swf build/recorder.js/recorder-`cat vendor/recorder.js/VERSION`.swf
-	cat vendor/recorder.js/recorder.js >> build/sdk.tmp.js
+	cat vendor/recorder.js/recorder.js >> build/sdk.unminified.js
 
 build_soundmanager2:
 	mkdir -p build/soundmanager2
@@ -36,8 +36,7 @@ build_tests:
 	cp -R test build/
 
 minify:
-	closure-compiler --js build/sdk.tmp.js > build/sdk.js
-	rm build/sdk.tmp.js
+	closure-compiler --js build/sdk.unminified.js > build/sdk.js
 
 clean:
 	rm -rf build/*
