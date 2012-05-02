@@ -38,9 +38,13 @@ window.SC = SC.Helper.merge SC || {},
 
     _handleInPopupContext: () ->
       if @_isDialogWindowName(window.name) && !window.location.pathname.match(/\/dialogs\//)
-        window.opener.setTimeout (->
-          window.opener.SC.Dialog._handleDialogReturn(window);
-        ), 1
+        isiOS5 = (navigator.userAgent.match(/OS 5(_\d)+ like Mac OS X/i))
+        if isiOS5
+          window.opener.SC.Dialog._handleDialogReturn(window)
+        else
+          window.opener.setTimeout (->
+            window.opener.SC.Dialog._handleDialogReturn(window)
+          ), 1
 
     buildUrlForDialog: (dialogName, options={}) ->
       url = new SC.URI(SC._baseUrl)
