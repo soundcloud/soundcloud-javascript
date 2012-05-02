@@ -9,7 +9,7 @@ window.SC = SC.Helper.merge SC || {},
       window.SM2_DEFER = true;
       SC.Helper.loadJavascript soundManagerURL + @_soundmanagerScriptPath, ->
         window.soundManager = new SoundManager()
-        soundManager.url = soundManagerURL + "/swf";
+        soundManager.url = soundManagerURL;
         soundManager.flashVersion = 9;
         soundManager.useFlashBlock = false;
         soundManager.useHTML5Audio = false;
