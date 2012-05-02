@@ -19,7 +19,6 @@ module "SC.Helper.extractOptionsAndCallbackArguments"
 test "passing only a callback", ->
   fn = (new Function)
   a = SC.Helper.extractOptionsAndCallbackArguments(fn)
-  console.log(a.options)
   deepEqual(a.options, {})
   equal(a.callback, fn)
 
