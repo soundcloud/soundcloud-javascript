@@ -18,7 +18,7 @@ window.SC = SC.Helper.merge SC || {},
     ECHO: "echo"
     CONNECT: "connect"
     PICKER: "picker"
-    _windowNamePrefix: "SoundCloud Dialog"
+    _windowNamePrefix: "SoundCloud_Dialog"
     _dialogCallbacks: {}
 
     _generateWindowName: () ->
