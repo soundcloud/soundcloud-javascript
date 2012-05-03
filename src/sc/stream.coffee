@@ -2,20 +2,7 @@ window.SC = SC.Helper.merge SC || {},
   _soundmanagerPath: "/soundmanager2"
   _soundmanagerScriptPath: "/soundmanager2.js"
   whenStreamingReady: (callback) ->
-    if window.soundManager
-      callback()
-    else
-      soundManagerURL = @_baseUrl + @._soundmanagerPath
-      window.SM2_DEFER = true;
-      SC.Helper.loadJavascript soundManagerURL + @_soundmanagerScriptPath, ->
-        window.soundManager = new SoundManager()
-        soundManager.url = soundManagerURL;
-        soundManager.flashVersion = 9;
-        soundManager.useFlashBlock = false;
-        soundManager.useHTML5Audio = false;
-        soundManager.beginDelayedInit()
-        soundManager.onready ->
-          callback()
+    SC.Loader.packages.streaming.whenReady callback
 
   _prepareStreamUrl: (idOrUrl) ->
     if idOrUrl.toString().match /^\d.*$/ # legacy rewrite from id to path
@@ -57,3 +44,16 @@ window.SC = SC.Helper.merge SC || {},
   streamStopAll: ->
     if window.soundManager?
       window.soundManager.stopAll()
+
+SC.Loader.registerPackage new SC.Loader.Package "streaming", ->
+  soundManagerURL = SC._baseUrl + SC._soundmanagerPath
+  window.SM2_DEFER = true;
+  SC.Helper.loadJavascript soundManagerURL + SC._soundmanagerScriptPath, ->
+    window.soundManager = new SoundManager()
+    soundManager.url = soundManagerURL;
+    soundManager.flashVersion = 9;
+    soundManager.useFlashBlock = false;
+    soundManager.useHTML5Audio = false;
+    soundManager.beginDelayedInit()
+    soundManager.onready ->
+      SC.Loader.packages.streaming.setReady()
