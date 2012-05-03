@@ -1,3 +1,12 @@
+module "SC.whenStreamingReady"
+
+asyncTest "should be able to handle multiple calls in a row", 2, ->
+  SC.whenStreamingReady ->
+    ok 1, "first was called"
+  SC.whenStreamingReady ->
+    ok 1, "second was called"
+    start()
+
 module "SC._prepareStreamUrl"
 
 test "should resolve id to /tracks/id/stream", ->
