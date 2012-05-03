@@ -1,5 +1,5 @@
 window.SC = SC.Helper.merge SC || {},
-  _recorderSwfPath: "/recorder.js/recorder-0.8.swf"
+  _recorderSwfPath: "/recorder.js/recorder-0.9.0.swf"
   whenRecordingReady: (callback) ->
     if window.Recorder.flashInterface() && window.Recorder.flashInterface().record?
       callback()
