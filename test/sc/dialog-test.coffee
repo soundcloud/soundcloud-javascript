@@ -18,7 +18,7 @@ test "should be recognized by _isDialogWindowName", 1, ->
 module "SC.Dialog.buildUrlForDialog"
 test "should build the correct url for echo dialog", 1, ->
   url = SC.Dialog.buildUrlForDialog(SC.Dialog.ECHO, {})
-  ok url.match(SC._dialogsPath + "/echo#redirect_uri=%2Fexamples%2Fcallback.html")
+  ok url.match(SC._dialogsPath + "/echo/#redirect_uri=%2Fexamples%2Fcallback.html")
 
 test "should build the correct url for connect dialog", 1, ->
   equal SC.Dialog.buildUrlForDialog(SC.Dialog.CONNECT, {}), "https://soundcloud.com/connect?redirect_uri=%2Fexamples%2Fcallback.html"
