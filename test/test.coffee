@@ -3,7 +3,7 @@ TestSuite =
   tests: ["helper-test.coffee", "sc-test.coffee", "sc/api-test.coffee", "sc/stream-test.coffee", "integration.coffee", "sc/dialog-test.coffee"]
 
   setTestsFromParams: ->
-    loc = new URI location, decodeQuery: true
+    loc = new (SC.URI || URI) location, decodeQuery: true
     if loc.query.tests
       @tests = loc.query.tests
 
@@ -11,19 +11,14 @@ TestSuite =
     QUnit.reset = () ->
       SC.accessToken(null)
 
-    if TestSuite.inDevelopmentMode
-      @loadJavascript @compiledSrc, =>
-        @setTestsFromParams()
-        SC.initialize
-          client_id: "YOUR_CLIENT_ID"
-          redirect_uri: "/examples/callback.html"
-        @loadCoffeescripts @tests
-    else
-      @loadJavascript @compiledSrc, () =>
-        SC.initialize
-          client_id:  "YOUR_CLIENT_ID"
-          baseUrl: ""
-        @loadCoffeescripts(@tests)
+
+    @loadJavascript @compiledSrc, =>
+      @setTestsFromParams()
+      SC._baseUrl = "http://" + window.location.hostname
+      SC.initialize
+        client_id: "YOUR_CLIENT_ID"
+        redirect_uri: "/examples/callback.html"
+      @loadCoffeescripts @tests
 
 
   loadCoffeescripts: (scripts, callback) ->
@@ -41,5 +36,4 @@ TestSuite =
     s.src = src;
     document.body.appendChild(s)
 
-TestSuite.inDevelopmentMode = true;
 TestSuite.initialize()

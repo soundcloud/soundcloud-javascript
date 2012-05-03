@@ -25,7 +25,7 @@ loadJavascript = (src, callback) ->                                             
 loadJavascript "/vendor/recorder.js/recorder.js"                                  \n\
 loadJavascript "/vendor/uri.js/build/uri.js", () =>                               \n\
   window.SC ||= {}                                                                \n\
-  SC.URI = URI                                                                    \n\
+  SC.URI ||= URI                                                                  \n\
                                                                                   \n\
 loadCoffeescripts srcs, () =>                                                     \n\
   SC._baseUrl = "http://connect.soundcloud.dev"                                   \n\
