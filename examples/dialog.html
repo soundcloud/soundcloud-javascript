@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>SoundCloud JavaScript SDK - Basic Example</title>
+    <link href="http://importer.soundcloudlabs.com/stylesheets/labs.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="examples.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="examples.js"></script>
+  </head>
+  <body>
+<textarea class="exampleSource"><script src="http://connect.soundcloud.com/sdk.js"></script>
+<script>
+  SC.initialize({
+    client_id: "YOUR_CLIENT_ID",
+    redirect_uri: "/examples/callback.html"
+  });
+
+  SC.accessToken("jwtest");
+
+  $("#pick").live("click", function(){
+    SC.dialog(SC.Dialog.PICKER, function(options){
+      SC.get("/tracks/" + options.track_id, function(track){
+        alert("You've selected track: " + track.title);
+      });
+    });
+  });
+</script>
+
+
+<button class="big button" id="pick">Pick A Track</button>
+
+</textarea>
+    <div id="page">
+      <div id="header">
+        <a href="/"><h1>SoundCloud JavaScript SDK - Basic Example</h1></a>
+      </div>
+      <div class="content">
+        <div class="tab-ui">
+          <ul class="tabs">
+            <li class="first current"><a href="basic.html">Basic</a></li>
+            <li class="first"><a href="connecting.html">Connecting</a></li>
+            <li class="first"><a href="streaming.html">Streaming</a></li>
+            <li class="first"><a href="recording.html">Recording</a></li>
+          </ul>
+        </div>
+        
+        <div id="left">
+          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
+            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
+            
+            
+          <p>Dialog test </p>
+
+          <div class="example"></div>
+        </div>
+        <div id="right"><pre><code></code></pre></div>
+      </div>
+    </div>
+  </body>
+</html>
