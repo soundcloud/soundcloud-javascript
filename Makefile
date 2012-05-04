@@ -15,6 +15,7 @@ build_deps:
 
 build_recorder_js:
 	mkdir -p $(BUILD_DIR)/recorder.js
+	cp vendor/recorder.js/soundcloudRecorder.swf $(BUILD_DIR)/recorder.js/recorder-0.8.swf
 	cp vendor/recorder.js/soundcloudRecorder.swf $(BUILD_DIR)/recorder.js/recorder-`cat vendor/recorder.js/VERSION`.swf
 	cat vendor/recorder.js/recorder.js >> $(BUILD_DIR)/sdk.unminified.js
 
