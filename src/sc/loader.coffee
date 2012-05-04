@@ -20,8 +20,8 @@ window.SC = SC.Helper.merge SC || {},
           @callbacks = []
 
         setReady: ->
-          @runCallbacks()
           @state = SC.Loader.States.READY
+          @runCallbacks()
 
         load: ->
           @state = SC.Loader.States.LOADING
