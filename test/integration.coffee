@@ -24,18 +24,21 @@ fixturePrivateTrackToken = "s-2gxGq"
 asyncTest "Audio Recording and Uploading", 2, ->
   SC.accessToken(fixtureAccessToken)
   trackTitle = "JS SDK Test Recording"
+  uploaded = false
   SC.record
     start: ->
-      ok("start event fired")
+      ok(1, "start event fired")
     progress: ->
       SC.recordStop()
-      SC.recordUpload
-        track:
-          title: trackTitle
-          sharing: "private"
-      , (track) ->
-        equal track.title, trackTitle
-        start()
+      if !uploaded
+        uploaded = true
+        SC.recordUpload
+          track:
+            title: trackTitle
+            sharing: "private"
+        , (track) ->
+          equal track.title, trackTitle, "Track response matches track request"
+          start()
 
 asyncTest "Receive latest tracks", 1, ->
   SC.get "/tracks",

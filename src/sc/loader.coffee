@@ -20,18 +20,18 @@ window.SC = SC.Helper.merge SC || {},
           @callbacks = []
 
         setReady: ->
-          @runCallbacks()
           @state = SC.Loader.States.READY
+          @runCallbacks()
 
         load: ->
           @state = SC.Loader.States.LOADING
-          @loadFunction()
+          @loadFunction.apply(this)
 
         whenReady: (callback) ->
           switch @state
             when SC.Loader.States.UNLOADED
               @addCallback(callback)
-              loadFunction.apply(this)
+              @load()
             when SC.Loader.States.LOADING
               @addCallback(callback)
             when SC.Loader.States.READY
@@ -39,5 +39,5 @@ window.SC = SC.Helper.merge SC || {},
       }
 
     packages: {}
-    registerPackage: (package) ->
-      @packages[package.name] = package
+    registerPackage: (pkg) ->
+      @packages[pkg.name] = pkg

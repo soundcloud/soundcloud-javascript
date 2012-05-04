@@ -36,9 +36,10 @@ test "#whenReady when READY should call immediatly with calling load", 1, ->
   pkg.whenReady ->
     ok "callback called"
 
-test "#whenReady when UNLOADED should add callback and call load", 2, ->
+test "#whenReady when UNLOADED should add callback, set state and call load", 3, ->
   fn = new Function
   pkg = new SC.Loader.Package "test", () ->
+    equal @state, SC.Loader.States.LOADING
     ok "load function was called"
     deepEqual @callbacks, [fn]
     @setReady()
