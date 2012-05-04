@@ -1,8 +1,11 @@
-build: prepare_build_dir build_coffee build_vendor build_examples build_tests minify
+build: build_deps prepare_build_dir build_coffee build_vendor build_examples build_tests minify
 	echo "done"
 
-prepare_build_dir: 
+prepare_build_dir:
 	mkdir -p build
+
+build_deps:
+	npm install
 
 build_recorder_js:
 	mkdir -p build/recorder.js
@@ -23,7 +26,7 @@ build_legacy:
 build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
 
 build_coffee:
-	coffee --join build/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
+	node_modules/coffee-script/bin/coffee --join build/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
 
 build_dialogs:
 	mkdir -p build/dialogs
@@ -36,7 +39,8 @@ build_tests:
 	cp -R test build/
 
 minify:
-	closure-compiler --js build/sdk.unminified.js > build/sdk.js
+	./node_modules/uglify-js/bin/uglifyjs build/sdk.unminified.js > build/sdk.js
 
 clean:
 	rm -rf build/*
+	rm -rf node_modules
