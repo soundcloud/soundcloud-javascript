@@ -1,6 +1,7 @@
 BUILD_DIR=build
 
 build: build_deps prepare_build_dir build_coffee build_vendor build_examples build_tests minify pkgignore
+	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
 
 pkgignore:
