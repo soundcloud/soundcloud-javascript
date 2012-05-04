@@ -27,7 +27,10 @@ window.SC = SC.Helper.merge SC || {},
     })
 
 SC.Loader.registerPackage new SC.Loader.Package "recording", ->
-  Recorder.initialize
-    swfSrc: SC._baseUrl + SC._recorderSwfPath + "?" + SC._version
-    initialized: () ->
-      SC.Loader.packages.recording.setReady()
+  if Recorder.flashInterface()
+    SC.Loader.packages.recording.setReady()
+  else
+    Recorder.initialize
+      swfSrc: SC._baseUrl + SC._recorderSwfPath + "?" + SC._version
+      initialized: () ->
+        SC.Loader.packages.recording.setReady()
