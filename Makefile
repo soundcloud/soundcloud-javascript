@@ -4,7 +4,7 @@ build: build_deps prepare_build_dir build_coffee build_vendor build_examples bui
 	echo "done"
 
 pkgignore:
-	find . -mindepth 1 -maxdepth 1 | grep -v $(BUILD_DIR) > .pkgignore
+	find . -mindepth 1 -maxdepth 1 | grep -v $(BUILD_DIR) | sed 's/^\.\///' > .pkgignore
 
 prepare_build_dir:
 	mkdir -p $(BUILD_DIR)
