@@ -46,14 +46,17 @@ window.SC = SC.Helper.merge SC || {},
       window.soundManager.stopAll()
 
 SC.Loader.registerPackage new SC.Loader.Package "streaming", ->
-  soundManagerURL = SC._baseUrl + SC._soundmanagerPath
-  window.SM2_DEFER = true;
-  SC.Helper.loadJavascript soundManagerURL + SC._soundmanagerScriptPath, ->
-    window.soundManager = new SoundManager()
-    soundManager.url = soundManagerURL;
-    soundManager.flashVersion = 9;
-    soundManager.useFlashBlock = false;
-    soundManager.useHTML5Audio = false;
-    soundManager.beginDelayedInit()
-    soundManager.onready ->
-      SC.Loader.packages.streaming.setReady()
+  if window.soundManager?
+    SC.Loader.packages.streaming.setReady()
+  else
+    soundManagerURL = SC._baseUrl + SC._soundmanagerPath
+    window.SM2_DEFER = true;
+    SC.Helper.loadJavascript soundManagerURL + SC._soundmanagerScriptPath, ->
+      window.soundManager = new SoundManager()
+      soundManager.url = soundManagerURL;
+      soundManager.flashVersion = 9;
+      soundManager.useFlashBlock = false;
+      soundManager.useHTML5Audio = false;
+      soundManager.beginDelayedInit()
+      soundManager.onready ->
+        SC.Loader.packages.streaming.setReady()
