@@ -16,8 +16,6 @@
     redirect_uri: "/examples/callback.html"
   });
 
-  SC.accessToken("jwtest");
-
   $("#pick").live("click", function(){
     SC.dialog(SC.Dialog.PICKER, function(options){
       SC.get("/tracks/" + options.track_id, function(track){
