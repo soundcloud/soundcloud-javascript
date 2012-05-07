@@ -3,13 +3,13 @@ window.SC = SC.Helper.merge SC || {},
   dialog: (dialogName, optionsOrCallback, callback) ->
     a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
     options = a.options; callback = a.callback
+    dialogId = @Dialog._generateDialogId()
+    options.state = dialogId
+    @Dialog._dialogCallbacks[dialogId] = callback
     url = @Dialog.buildUrlForDialog(dialogName, options)
-    name = @Dialog._generateWindowName()
-    @Dialog._dialogCallbacks[name] = callback
     SC.Helper.openCenteredPopup url, 
       width: @Dialog.WIDTH
       height: @Dialog.HEIGHT
-      name: name
 
   Dialog:
     WIDTH: 456
@@ -17,26 +17,35 @@ window.SC = SC.Helper.merge SC || {},
     ECHO: "echo"
     CONNECT: "connect"
     PICKER: "picker"
-    _windowNamePrefix: "SoundCloud_Dialog"
+    _dialogIdPrefix: "SoundCloud_Dialog"
     _dialogCallbacks: {}
 
-    _generateWindowName: () ->
-      [@_windowNamePrefix, Math.ceil(Math.random() * 1000000).toString(16)].join("_")
+    _generateDialogId: () ->
+      [@_dialogIdPrefix, Math.ceil(Math.random() * 1000000).toString(16)].join("_")
 
-    _isDialogWindowName: (name) ->
-      name.match (new RegExp("^#{@_windowNamePrefix}"))
+    _isDialogId: (id) ->
+      (id || "").match (new RegExp("^#{@_dialogIdPrefix}"))
+
+    _getDialogIdFromWindow: (window) ->
+      loc = new SC.URI(window.location, decodeQuery: true, decodeFragment: true)
+      id = loc.query.state || loc.fragment.state
+      if @_isDialogId(id)
+        id
+      else
+        null
 
     _handleDialogReturn: (window) ->
-      callback = @_dialogCallbacks[window.name]
+      dialogId = @_getDialogIdFromWindow(window)
+      callback = @_dialogCallbacks[dialogId]
       if callback?
         url = new SC.URI(window.location, decodeFragment: true, decodeQuery: true)
         options = SC.Helper.merge(url.query, url.fragment)
         window.close()
         callback(options)
-        delete @_dialogCallbacks[window.name]
+        delete @_dialogCallbacks[dialogId]
 
     _handleInPopupContext: () ->
-      if @_isDialogWindowName(window.name) && !window.location.pathname.match(/\/dialogs\//)
+      if @_getDialogIdFromWindow(window) && !window.location.pathname.match(/\/dialogs\//)
         isiOS5 = (navigator.userAgent.match(/OS 5(_\d)+ like Mac OS X/i))
         if isiOS5
           window.opener.SC.Dialog._handleDialogReturn(window)
