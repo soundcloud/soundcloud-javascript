@@ -17,10 +17,10 @@ test "should be recognized by _isDialogId", 1, ->
 
 module "SC.Dialog._getDialogIdFromWindow()"
 test "should extract the id out of the state param", 1, ->
+  id = SC.Dialog._generateDialogId()
   win =
-    location: "http://somewhere.com/?state=Dialog_Id"
-  equal SC.Dialog._getDialogIdFromWindow(win), "Dialog_Id"
-
+    location: "http://somewhere.com/?state=#{id}"
+  equal SC.Dialog._getDialogIdFromWindow(win), id
 
 module "SC.Dialog.buildUrlForDialog"
 test "should build the correct url for echo dialog", 1, ->
