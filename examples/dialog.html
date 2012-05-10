@@ -12,14 +12,16 @@
 <textarea class="exampleSource"><script src="http://connect.soundcloud.com/sdk.js"></script>
 <script>
   SC.initialize({
-    client_id: "YOUR_CLIENT_ID",
-    redirect_uri: "/examples/callback.html"
+    client_id: "c202b469a633a7a5b15c9e10b5272b78",
+    redirect_uri: "http://connect.soundcloud.com/examples/callback.html"
   });
 
   $("#pick").live("click", function(){
-    SC.dialog(SC.Dialog.PICKER, function(options){
-      SC.get("/tracks/" + options.track_id, function(track){
-        alert("You've selected track: " + track.title);
+    SC.connect(function(){
+      SC.dialog(SC.Dialog.PICKER, function(options){
+        SC.get("/tracks/" + options.track_id, function(track){
+          alert("You've selected track: " + track.title);
+        });
       });
     });
   });
