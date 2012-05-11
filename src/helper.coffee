@@ -49,11 +49,10 @@ SC.Helper =
 
     options = SC.Helper.merge options,
       location: 1
-      left: window.screenX + (window.outerWidth  - width)  / 2
-      top:  window.screenY + (window.outerHeight - height) / 2
+      left: window.screenX + (window.outerWidth  - options.width)  / 2
+      top:  window.screenY + (window.outerHeight - options.height) / 2
       toolbar: "no"
       scrollbars: "yes"
-
     window.open(url, options.name, @_optionsToString(options))
 
   _optionsToString: (options) ->
