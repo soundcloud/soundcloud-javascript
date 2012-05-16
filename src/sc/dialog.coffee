@@ -5,11 +5,18 @@ window.SC = SC.Helper.merge SC || {},
     options = a.options; callback = a.callback
     dialogId = @Dialog._generateDialogId()
     options.state = dialogId
+    target = options.target
+    delete options.target
     @Dialog._dialogCallbacks[dialogId] = callback
     url = @Dialog.buildUrlForDialog(dialogName, options)
-    SC.Helper.openCenteredPopup url, 
-      width: @Dialog.WIDTH
-      height: @Dialog.HEIGHT
+
+
+    if target?
+      target.src = url
+    else
+      SC.Helper.openCenteredPopup url, 
+        width: @Dialog.WIDTH
+        height: @Dialog.HEIGHT
 
   Dialog:
     WIDTH: 456
@@ -49,9 +56,14 @@ window.SC = SC.Helper.merge SC || {},
         isiOS5 = (navigator.userAgent.match(/OS 5(_\d)+ like Mac OS X/i))
         if isiOS5
           window.opener.SC.Dialog._handleDialogReturn(window)
-        else
+        else if window.opener
           window.opener.setTimeout (->
             window.opener.SC.Dialog._handleDialogReturn(window)
+          ), 1
+        else if window.top
+          window.top.setTimeout (->
+            console.log("1");
+            window.top.SC.Dialog._handleDialogReturn(window)
           ), 1
 
     buildUrlForDialog: (dialogName, options={}) ->

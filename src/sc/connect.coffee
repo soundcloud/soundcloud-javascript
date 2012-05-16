@@ -13,6 +13,7 @@ window.SC = SC.Helper.merge SC || {},
       response_type:  "code_and_token"
       scope:          options.scope || "non-expiring"
       display:        "popup"
+      target:         options.target
 
     if dialogOptions.client_id && dialogOptions.redirect_uri
       @_connectWindow = SC.dialog SC.Dialog.CONNECT, dialogOptions, (returnOptions) ->
