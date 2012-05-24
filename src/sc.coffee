@@ -1,9 +1,9 @@
 window.SC = SC.Helper.merge SC || {},
-  _version: "1.1.2"
-  _baseUrl: "http://connect.soundcloud.com"
+  _version: "1.1.3"
+  _baseUrl: "//connect.soundcloud.com"
   options:
     site: "soundcloud.com"
-    baseUrl: "http://connect.soundcloud.com"
+    baseUrl: "//connect.soundcloud.com"
   connectCallbacks: {}
   _popupWindow: undefined
 
