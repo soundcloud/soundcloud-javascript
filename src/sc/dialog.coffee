@@ -62,12 +62,12 @@ window.SC = SC.Helper.merge SC || {},
           ), 1
         else if window.top
           window.top.setTimeout (->
-            console.log("1");
             window.top.SC.Dialog._handleDialogReturn(window)
           ), 1
 
     buildUrlForDialog: (dialogName, options={}) ->
       url = new SC.URI(SC._baseUrl)
+      url.scheme = "http"
       url.fragment = SC.Helper.merge options,
         redirect_uri: SC.options.redirect_uri
       switch(dialogName)
