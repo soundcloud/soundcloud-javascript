@@ -10,13 +10,13 @@ window.SC = SC.Helper.merge SC || {},
     @Dialog._dialogCallbacks[dialogId] = callback
     url = @Dialog.buildUrlForDialog(dialogName, options)
 
-
     if target?
       target.src = url
     else
       SC.Helper.openCenteredPopup url, 
         width: @Dialog.WIDTH
         height: @Dialog.HEIGHT
+        resizable: 0
 
   Dialog:
     WIDTH: 456
