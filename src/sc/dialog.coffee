@@ -7,16 +7,22 @@ window.SC = SC.Helper.merge SC || {},
     options.state = dialogId
     target = options.target
     delete options.target
-    @Dialog._dialogCallbacks[dialogId] = callback
-    url = @Dialog.buildUrlForDialog(dialogName, options)
 
-    if target?
-      target.src = url
+    @Dialog._dialogOptions[dialogId] = {
+      callback: callback
+      retainWindow: !!options.retainWindow
+    }
+
+    openRequestedDialog = =>
+      url = @Dialog.buildUrlForDialog(dialogName, options)
+      @Dialog._dialogOptions[dialogId].window = @Dialog._openDialog url, connectWindow
+
+    if dialogName == @Dialog.PICKER && !@accessToken()?
+      connectWindow = @connect
+        retainWindow: true
+        connected: openRequestedDialog
     else
-      SC.Helper.openCenteredPopup url, 
-        width: @Dialog.WIDTH
-        height: @Dialog.HEIGHT
-        resizable: 0
+      openRequestedDialog()
 
   Dialog:
     WIDTH: 456
@@ -25,7 +31,16 @@ window.SC = SC.Helper.merge SC || {},
     CONNECT: "connect"
     PICKER: "picker"
     _dialogIdPrefix: "SoundCloud_Dialog"
-    _dialogCallbacks: {}
+    _dialogOptions: {}
+
+    _openDialog: (url, target) ->
+      if target?
+        target.location = url
+      else
+        SC.Helper.openCenteredPopup url,
+          width: @WIDTH
+          height: @HEIGHT
+          resizable: 0
 
     _generateDialogId: () ->
       [@_dialogIdPrefix, Math.ceil(Math.random() * 1000000).toString(16)].join("_")
@@ -43,13 +58,13 @@ window.SC = SC.Helper.merge SC || {},
 
     _handleDialogReturn: (window) ->
       dialogId = @_getDialogIdFromWindow(window)
-      callback = @_dialogCallbacks[dialogId]
-      if callback?
+      dialogOptions = @_dialogOptions[dialogId]
+      if dialogOptions?
         url = new SC.URI(window.location, decodeFragment: true, decodeQuery: true)
-        options = SC.Helper.merge(url.query, url.fragment)
-        window.close()
-        callback(options)
-        delete @_dialogCallbacks[dialogId]
+        returnOptions = SC.Helper.merge(url.query, url.fragment)
+        window.close() unless dialogOptions.retainWindow
+        dialogOptions.callback(returnOptions)
+        delete @_dialogOptions[dialogId]
 
     _handleInPopupContext: () ->
       if @_getDialogIdFromWindow(window) && !window.location.pathname.match(/\/dialogs\//)

@@ -14,6 +14,7 @@ window.SC = SC.Helper.merge SC || {},
       scope:          options.scope || "non-expiring"
       display:        "popup"
       target:         options.target
+      retainWindow:   options.retainWindow
 
     if dialogOptions.client_id && dialogOptions.redirect_uri
       @_connectWindow = SC.dialog SC.Dialog.CONNECT, dialogOptions, (returnOptions) ->
