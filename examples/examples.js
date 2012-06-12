@@ -14,7 +14,7 @@ $(function(){
     },*/
 
     "connect.soundcloud.com": {
-      sdk: "http://connect.soundcloud.com/sdk.js",
+      sdk: "//connect.soundcloud.com/sdk.js",
       key: "c202b469a633a7a5b15c9e10b5272b78",
       redirect_uri: 'http://connect.soundcloud.com/examples/callback.html'
     },
