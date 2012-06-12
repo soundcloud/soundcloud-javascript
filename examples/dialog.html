@@ -18,11 +18,9 @@
   });
 
   $("#pick").live("click", function(){
-    SC.connect(function(){
-      SC.dialog(SC.Dialog.PICKER, function(options){
-        SC.get("/tracks/" + options.track_id, function(track){
-          alert("You've selected track: " + track.title);
-        });
+    SC.dialog(SC.Dialog.PICKER, function(options){
+      SC.get("/tracks/" + options.track_id, function(track){
+        alert("You've selected track: " + track.title);
       });
     });
   });
