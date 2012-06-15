@@ -8,7 +8,7 @@ pkgignore:
 	find . -mindepth 1 -maxdepth 1 | grep -v $(BUILD_DIR) | sed 's/^\.\///' > .pkgignore
 
 prepare_build_dir:
-	rm -r $(BUILD_DIR)/sdk.unminified.js
+	rm -rf $(BUILD_DIR)/sdk.unminified.js
 	mkdir -p $(BUILD_DIR)
 
 build_deps:
