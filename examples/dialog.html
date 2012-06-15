@@ -18,17 +18,16 @@
   });
 
   $("#pick").live("click", function(){
-    SC.dialog(SC.Dialog.PICKER, function(options){
-      SC.get("/tracks/" + options.track_id, function(track){
-        alert("You've selected track: " + track.title);
-      });
+    SC.dialog(SC.Dialog.PICKER, function(params){
+      var track = params.track;
+      SC.oEmbed(track.secret_uri || track.uri, $(".track")[0]);
     });
   });
 </script>
 
 
 <button class="big button" id="pick">Pick A Track</button>
-
+<div class="track"></div>
 </textarea>
     <div id="page">
       <div id="header">
@@ -47,9 +46,6 @@
         <div id="left">
           <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
             For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
-            
-            
-          <p>Dialog test </p>
 
           <div class="example"></div>
         </div>
