@@ -3,50 +3,23 @@ window.SC = SC.Helper.merge SC || {},
   dialog: (dialogName, optionsOrCallback, callback) ->
     a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
     options = a.options; callback = a.callback
-    dialogId = @Dialog._generateDialogId()
-    options.state = dialogId
-    target = options.target
-    delete options.target
 
-    @Dialog._dialogOptions[dialogId] = {
-      callback: callback
-      retainWindow: !!options.retainWindow
-    }
-
-    openRequestedDialog = =>
-      url = @Dialog.buildUrlForDialog(dialogName, options)
-      @Dialog._dialogOptions[dialogId].window = @Dialog._openDialog url, connectWindow
-
-    if dialogName == @Dialog.PICKER && !@accessToken()?
-      connectWindow = @connect
-        retainWindow: true
-        connected: openRequestedDialog
-    else
-      openRequestedDialog()
+    options.callback = callback
+    options.redirect_uri = @options.redirect_uri
+    dialog = new SC.Dialog[dialogName + "Dialog"](options)
+    SC.Dialog._dialogs[dialog.id] = dialog
+    dialog.open()
+    dialog
 
   Dialog:
-    WIDTH: 456
-    HEIGHT: 510
-    ECHO: "echo"
-    CONNECT: "connect"
-    PICKER: "picker"
-    _dialogIdPrefix: "SoundCloud_Dialog"
-    _dialogOptions: {}
-
-    _openDialog: (url, target) ->
-      if target?
-        target.location = url
-      else
-        SC.Helper.openCenteredPopup url,
-          width: @WIDTH
-          height: @HEIGHT
-          resizable: 0
-
-    _generateDialogId: () ->
-      [@_dialogIdPrefix, Math.ceil(Math.random() * 1000000).toString(16)].join("_")
+    ECHO: "Echo"
+    CONNECT: "Connect"
+    PICKER: "Picker"
+    ID_PREFIX: "SoundCloud_Dialog"
+    _dialogs: {}
 
     _isDialogId: (id) ->
-      (id || "").match (new RegExp("^#{@_dialogIdPrefix}"))
+      (id || "").match (new RegExp("^#{@ID_PREFIX}"))
 
     _getDialogIdFromWindow: (window) ->
       loc = new SC.URI(window.location, decodeQuery: true, decodeFragment: true)
@@ -58,13 +31,10 @@ window.SC = SC.Helper.merge SC || {},
 
     _handleDialogReturn: (window) ->
       dialogId = @_getDialogIdFromWindow(window)
-      dialogOptions = @_dialogOptions[dialogId]
-      if dialogOptions?
-        url = new SC.URI(window.location, decodeFragment: true, decodeQuery: true)
-        returnOptions = SC.Helper.merge(url.query, url.fragment)
-        window.close() unless dialogOptions.retainWindow
-        dialogOptions.callback(returnOptions)
-        delete @_dialogOptions[dialogId]
+      dialog = @_dialogs[dialogId]
+      if dialog?
+        if dialog.handleReturn()
+          delete @_dialogs[dialogId]
 
     _handleInPopupContext: () ->
       if @_getDialogIdFromWindow(window) && !window.location.pathname.match(/\/dialogs\//)
@@ -80,23 +50,95 @@ window.SC = SC.Helper.merge SC || {},
             window.top.SC.Dialog._handleDialogReturn(window)
           ), 1
 
-    buildUrlForDialog: (dialogName, options={}) ->
-      url = new SC.URI(SC._baseUrl)
-      url.scheme = "http"
-      url.fragment = SC.Helper.merge options,
-        redirect_uri: SC.options.redirect_uri
-      switch(dialogName)
-        when SC.Dialog.ECHO
-          url.path += SC._dialogsPath + "/" + SC.Dialog.ECHO + "/"
-        when SC.Dialog.PICKER
-          url.path += SC._dialogsPath + "/" + SC.Dialog.PICKER + "/"
-          url.fragment.access_token = SC.accessToken()
-        when SC.Dialog.CONNECT
-          url.scheme = "https"
-          url.host = "soundcloud.com"
-          url.path = "/connect"
-          url.query = url.fragment
-          url.fragment = {}
-      url.toString()
+    AbstractDialog: class AbstractDialog
+      WIDTH: 456
+      HEIGHT: 510
+      ID_PREFIX: "SoundCloud_Dialog"
+      PARAM_KEYS: ["redirect_uri"]
+      requiresAuthentication: false
+
+      generateId: ->
+        [@ID_PREFIX, Math.ceil(Math.random() * 1000000).toString(16)].join("_")
+
+      constructor: (@options={}) ->
+        @id = @generateId()
+
+      buildURI: (uri=new SC.URI(SC._baseUrl)) ->
+        uri.scheme = "http"
+        uri.path += SC._dialogsPath + "/" + @name + "/"
+
+        uri.fragment =
+          state: @id
+
+        if @requiresAuthentication
+          uri.fragment.access_token = SC.accessToken()
+
+        for paramKey in @PARAM_KEYS
+          uri.fragment[paramKey] = @options[paramKey] if @options[paramKey]?
+
+        uri
+
+      open: ->
+        if @requiresAuthentication && !SC.accessToken()?
+          @authenticateAndOpen()
+        else
+          url = @buildURI()
+          if @options.window?
+            @options.window.location = url
+          else
+            @options.window = SC.Helper.openCenteredPopup url,
+              width: @WIDTH
+              height: @HEIGHT
+
+      authenticateAndOpen: ->
+        connectDialog = SC.connect
+          retainWindow: true
+          window: @options.window
+          connected: =>
+            @options.window = connectDialog.options.window
+            @open()
+
+      paramsFromWindow: ->
+        url = new SC.URI(@options.window.location, decodeFragment: true, decodeQuery: true)
+        params = SC.Helper.merge url.query, url.fragment
+
+      handleReturn: ->
+        params = @paramsFromWindow()
+        @options.window.close() unless @options.retainWindow
+        @options.callback(params)
+
+    EchoDialog: class EchoDialog extends AbstractDialog
+      PARAM_KEYS: ["client_id", "redirect_uri", "hello"]
+      name: "echo"
+
+    PickerDialog: class PickerDialog extends AbstractDialog
+      PARAM_KEYS: ["client_id", "redirect_uri"]
+      name: "picker"
+      requiresAuthentication: true
+
+      handleReturn: ->
+        params = @paramsFromWindow()
+        if params.action == "logout"
+          SC.accessToken(null)
+          @open()
+          false
+        else if params.track_uri?
+          @options.window.close() unless @options.retainWindow
+          SC.get params.track_uri, (track) =>
+            @options.callback
+              track: track
+          true
+
+    ConnectDialog: class ConnectDialog extends AbstractDialog
+      PARAM_KEYS: ["client_id", "redirect_uri", "client_secret", "response_type", "scope", "display"]
+      name: "connect"
+      buildURI: ->
+        uri = super
+        uri.scheme = "https"
+        uri.host = "soundcloud.com"
+        uri.path = "/connect"
+        uri.query = uri.fragment
+        uri.fragment = {}
+        uri
 
 SC.Dialog._handleInPopupContext()

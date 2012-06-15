@@ -13,20 +13,23 @@ window.SC = SC.Helper.merge SC || {},
       response_type:  "code_and_token"
       scope:          options.scope || "non-expiring"
       display:        "popup"
-      target:         options.target
+      window:         options.window
       retainWindow:   options.retainWindow
 
     if dialogOptions.client_id && dialogOptions.redirect_uri
-      @_connectWindow = SC.dialog SC.Dialog.CONNECT, dialogOptions, (returnOptions) ->
-        if returnOptions.error?
-          throw new Error("SC OAuth2 Error: " + returnOptions.error_description)
+      dialog = SC.dialog SC.Dialog.CONNECT, dialogOptions, (params) ->
+        if params.error?
+          throw new Error("SC OAuth2 Error: " + params.error_description)
         else
-          SC.accessToken(returnOptions.access_token)
+          SC.accessToken(params.access_token)
           options.connected() if options.connected?
         options.callback() if options.callback?
+      @_connectWindow = dialog.window
+      dialog
     else
-      throw "Either client_id and redirect_uri (for user agent flow) must be passed as an option"
+      throw "Options client_id and redirect_uri must be passed"
 
+  # legacy from old callback.html
   connectCallback: ->
     SC.Dialog._handleDialogReturn(SC._connectWindow)
 
