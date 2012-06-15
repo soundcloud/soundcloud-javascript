@@ -24,7 +24,7 @@ window.SC = SC.Helper.merge SC || {},
           SC.accessToken(params.access_token)
           options.connected() if options.connected?
         options.callback() if options.callback?
-      @_connectWindow = dialog.window
+      @_connectWindow = dialog.options.window
       dialog
     else
       throw "Options client_id and redirect_uri must be passed"
