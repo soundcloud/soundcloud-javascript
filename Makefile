@@ -1,6 +1,6 @@
 BUILD_DIR=build
 
-build: build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
+build: weber build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
 
@@ -50,6 +50,10 @@ build_tests:
 
 minify:
 	./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk.unminified.js > $(BUILD_DIR)/sdk.js
+
+weber: Makefile Procfile
+	curl -o weber --compressed http://files.int.s-cloud.net/weber/weber-$(shell uname)-$(shell uname -m)
+	chmod +x weber
 
 clean:
 	rm -rf $(BUILD_DIR)/*
