@@ -1,4 +1,8 @@
 BUILD_DIR=build
+NODEJS_VERSION=0.8.9
+NODEJS=nodejs-0.8.9
+DESTDIR=system
+TMP=.tmp
 
 build: weber build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
@@ -11,8 +15,8 @@ prepare_build_dir:
 	rm -rf $(BUILD_DIR)/sdk.unminified.js
 	mkdir -p $(BUILD_DIR)
 
-build_deps:
-	npm install
+build_deps: $(DESTDIR)/usr/bin/node
+	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$${PWD} npm install
 
 build_recorder_js:
 	mkdir -p $(BUILD_DIR)/recorder.js
@@ -56,5 +60,19 @@ weber: Makefile Procfile
 	chmod +x weber
 
 clean:
-	rm -rf $(BUILD_DIR)/*
-	rm -rf node_modules
+	rm -rf $(BUILD_DIR)/* node_modules $(TMP)
+
+### nodejs
+$(TMP):
+	mkdir -p $(TMP)
+
+$(TMP)/$(NODEJS)/configure:
+	# nodejs extracts to joyent-nodes-<git-sha> ... let's use a more predictable path
+	mkdir -p $(TMP)/${NODEJS}
+	curl -L https://github.com/joyent/node/tarball/v$(NODEJS_VERSION) | tar xzv -C $(TMP)/$(NODEJS) --strip-components 1
+
+$(TMP)/$(NODEJS)/config.gypi: $(TMP)/$(NODEJS)/configure
+	cd $(TMP)/$(NODEJS); PKG_CONFIG_PATH=/usr/lib/pkgconfig/openssl.pc ./configure --prefix=/usr
+
+$(DESTDIR)/usr/bin/node: $(TMP)/$(NODEJS)/config.gypi
+	PORTABLE=1 make -j4 -C $(TMP)/$(NODEJS) DESTDIR=$(PWD)/$(DESTDIR) install
