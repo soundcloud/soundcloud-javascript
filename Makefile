@@ -10,7 +10,7 @@ build: weber build_deps prepare_build_dir build_vendor build_coffee build_exampl
 	echo "done"
 
 pkgignore:
-	find . -mindepth 1 -maxdepth 1 | grep -v $(BUILD_DIR) | sed 's/^\.\///' > .pkgignore
+	find . -mindepth 1 -maxdepth 1 | grep -v $(BUILD_DIR) | grep -v weber | sed 's/^\.\///' > .pkgignore
 
 prepare_build_dir:
 	rm -rf $(BUILD_DIR)/sdk.unminified.js
