@@ -4,6 +4,7 @@ NODEJS=nodejs-0.8.9
 DESTDIR=system
 TMP=.tmp
 
+
 build: weber build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
@@ -16,7 +17,7 @@ prepare_build_dir:
 	mkdir -p $(BUILD_DIR)
 
 build_deps: $(DESTDIR)/usr/bin/node
-	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$${PWD} npm install
+	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) npm install
 
 build_recorder_js:
 	mkdir -p $(BUILD_DIR)/recorder.js
@@ -38,7 +39,7 @@ build_legacy:
 build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
 
 build_coffee:
-	node_modules/coffee-script/bin/coffee --join /tmp/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
+	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) node_modules/coffee-script/bin/coffee --join /tmp/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
 	cat /tmp/sdk.unminified.js >> $(BUILD_DIR)/sdk.unminified.js
 	rm -rf /tmp/sdk.unminified.js
 
@@ -53,7 +54,7 @@ build_tests:
 	cp -R test $(BUILD_DIR)/
 
 minify:
-	./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk.unminified.js > $(BUILD_DIR)/sdk.js
+	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) ./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk.unminified.js > $(BUILD_DIR)/sdk.js
 
 weber: Makefile Procfile
 	curl -o weber --compressed http://files.int.s-cloud.net/weber/weber-$(shell uname)-$(shell uname -m)
