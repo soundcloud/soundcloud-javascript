@@ -1,0 +1,9 @@
+#!/usr/bin/env roundup
+
+. helper_functions
+
+describe "Test some basic urls"
+
+it_sets_correct_cache_headers_for_the_soundmanager() {
+  curl -s ${SERVER}/sdk.js | returns 200
+}
