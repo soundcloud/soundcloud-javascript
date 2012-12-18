@@ -4,7 +4,6 @@ NODEJS=nodejs-0.8.9
 DESTDIR=system
 TMP=.tmp
 
-
 build: weber build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
