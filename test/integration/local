@@ -1,0 +1,2 @@
+#!/bin/bash
+SERVER=localhost:5000 PATH=$PATH:${PWD} ./test_*

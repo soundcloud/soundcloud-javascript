@@ -1,0 +1,103 @@
+SERVER=${SERVER-localhost:5000}
+
+# matchers
+function returns {
+  header=$(cat)
+  echo $header | head -n1 | grep -q $1 && echo $header
+}
+
+# Checks whether this url can be cached by checking for 
+# Cache-Control: public
+#
+# Use with head request curl:
+#
+#   curl -I <url> | max_age_equals <max age>
+#
+function is_public_cache() {
+  header=$(cat)
+  echo "$header" | grep 'Cache-Control:.*public' && echo "$header"
+}
+
+# Compares received Content-Type against a given argument
+# Params:
+#   $1: Expected Content-Type
+#
+# Use with head request curl:
+#
+#   curl -I <url> | content_type_equals <content_type>
+#
+function content_type_equals() {
+  if [ $# != 1 ]
+  then
+    echo "content_type_equals needs an argument"
+    return 1
+  fi
+
+  header=$(cat)
+  echo "$header" | grep "Content-Type:[ ]*${1}" && echo "$header"
+}
+
+# Compares received Cache-Control max-age against a given argument
+# Params:
+#   $1: Expected max-age
+#
+# Use with head request curl:
+#
+#   curl -I <url> | max_age_equals <max age>
+#
+function max_age_equals() {
+  if [ $# != 1 ]
+  then
+    echo "max_age_equals needs an argument"
+    return 1
+  fi
+
+  header=$(cat)
+  echo "$header" | grep "Cache-Control:.*max-age=$1.*" && echo "$header"
+}
+
+# Compares received output to the source of a file
+# Params:
+#   $1: file name to compare body against
+#
+# Use with normal curl command:
+#
+#   curl <url> | body_is <local file>
+#
+function body_is() {
+  if [ $# != 1 ]
+  then
+    echo "body_is takes a file name as an argument"
+    return 1
+  fi
+
+  body=$(mktemp /tmp/roundup_body.XXXXX)
+  cat > $body
+
+  diff -B $body $1
+
+  result=$?
+
+  bodySrc=$(cat $body)
+  rm $body
+
+  [ $result -eq 0 ] && echo "$bodySrc"
+}
+
+# Compares received redirect header against a given argument
+#
+# Params:
+#   $1: Expected redirect path
+#
+# Use with head request curl:
+#
+#   curl -I <url> | redirects_to <url / path>
+#
+function redirects {
+  headers=$(cat)
+  echo "$headers" | grep "Location: $1" && echo "$res"
+}
+
+function fail {
+  false
+}

@@ -1,0 +1,15 @@
+#!/usr/bin/env roundup
+
+. helper_functions
+
+describe "Cache header settings for different routes"
+
+MAX_AGE=60
+
+it_sets_correct_cache_headers_for_the_soundmanager() {
+  curl -s -I ${SERVER}/soundmanager2/soundmanager2.swf | content_type_equals "application/x-shockwave-flash"
+  curl -s -I ${SERVER}/medium-connect.png              | content_type_equals "image/png"
+  curl -s -I ${SERVER}/latest.js                       | content_type_equals "application/javascript"
+  curl -s -I ${SERVER}/examples/oembed.html            | content_type_equals "text/html"
+  curl -s -I ${SERVER}/examples/highlight.css          | content_type_equals "text/css"
+}
