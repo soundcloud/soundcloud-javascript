@@ -2,8 +2,8 @@
 
 . helper_functions
 
-describe "Test some basic urls"
+describe "Test important urls"
 
-it_sets_correct_cache_headers_for_the_soundmanager() {
+it_serves_important_urls() {
   curl -s ${SERVER}/sdk.js | returns 200
 }
