@@ -43,3 +43,30 @@ In build mode the tests will laod the compiled sdk.js.
 - _vendor/_ includes git submodules of external projects
 - _test/_ tests
 - _examples/_ examples
+
+## Deployment
+
+
+This app is now deployed with the new bazooka, please follow the instructions to
+update your setup:
+
+One time setup
+--------------
+
+    get remote rm bazooka
+    bash <(curl panzerfaust.int.s-cloud.net/install) # unless you already have panzerfaust
+    panzerfaust check        # follow instructions
+    panzerfaust remote
+
+Deployment
+----------
+
+    panzerfaust deploy
+
+
+Problems
+---------
+
+    mailto:daniel@soundcloud.com / skype:kesselborn / irc:kesselborn
+
+
