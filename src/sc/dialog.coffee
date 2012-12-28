@@ -38,8 +38,9 @@ window.SC = SC.Helper.merge SC || {},
 
     _handleInPopupContext: () ->
       if @_getDialogIdFromWindow(window) && !window.location.pathname.match(/\/dialogs\//)
-        isiOS5 = (navigator.userAgent.match(/OS 5(_\d)+ like Mac OS X/i))
-        if isiOS5
+        isiOS5orGreater = (navigator.userAgent.match(/OS (\d)+(_\d)+ like Mac OS X/i))
+        isiOS5orGreater = if isiOS5orGreater then parseInt(isiOS5orGreater[1]) >= 5 else false
+        if isiOS5orGreater
           window.opener.SC.Dialog._handleDialogReturn(window)
         else if window.opener
           window.opener.setTimeout (->
