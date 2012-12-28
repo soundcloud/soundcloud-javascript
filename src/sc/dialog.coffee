@@ -87,7 +87,7 @@ window.SC = SC.Helper.merge SC || {},
           if @options.window?
             @options.window.location = url
           else
-            @options.window = SC.Helper.openCenteredPopup url,
+            @options.window = SC.Helper.openCenteredPopup url.toString(),
               width: @WIDTH
               height: @HEIGHT
 
