@@ -37,6 +37,12 @@ window.SC = SC.Helper.merge SC || {},
           delete @_dialogs[dialogId]
 
     _handleInPopupContext: () ->
+      ###
+        window.opener is null due to this bug in chromium
+          http://code.google.com/p/chromium/issues/detail?id=136610
+        looks like none of the dialogs will function correctly in Chrome in iOS until
+        this is resolved
+      ###
       if @_getDialogIdFromWindow(window) && !window.location.pathname.match(/\/dialogs\//)
         isiOS5orGreater = (navigator.userAgent.match(/OS (\d)+(_\d)+ like Mac OS X/i))
         isiOS5orGreater = if isiOS5orGreater then parseInt(isiOS5orGreater[1]) >= 5 else false
