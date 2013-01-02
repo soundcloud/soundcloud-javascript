@@ -1,0 +1,16 @@
+#!/usr/bin/env roundup
+
+. helper_functions
+
+describe "Check if content types are set correctly"
+
+MAX_AGE=60
+
+it_sets_correct_content_type() {
+  curl -s -I ${SERVER}/soundmanager2/soundmanager2.swf | content_type_equals "application/x-shockwave-flash"
+  curl -s -I ${SERVER}/medium-connect.png              | content_type_equals "image/png"
+  curl -s -I ${SERVER}/latest.js                       | content_type_equals "\(application/javascript\|application/x-javascript\)"
+  curl -s -I ${SERVER}/sdk.js                          | content_type_equals "\(application/javascript\|application/x-javascript\)"
+  curl -s -I ${SERVER}/examples/oembed.html            | content_type_equals "text/html"
+  curl -s -I ${SERVER}/examples/highlight.css          | content_type_equals "text/css"
+}

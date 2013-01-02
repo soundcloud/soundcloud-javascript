@@ -1,0 +1,9 @@
+#!/usr/bin/env roundup
+
+. helper_functions
+
+describe "Test important urls"
+
+it_serves_important_urls() {
+  curl -s ${SERVER}/sdk.js | returns 200
+}
