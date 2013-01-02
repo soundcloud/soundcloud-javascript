@@ -4,7 +4,8 @@ NODEJS=nodejs-0.8.9
 DESTDIR=system
 TMP=.tmp
 
-build: weber build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
+build: build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
+	test -z "$(WEBER_HOST)" || $(MAKE) weber
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
 
@@ -56,7 +57,7 @@ minify:
 	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) ./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk.unminified.js > $(BUILD_DIR)/sdk.js
 
 weber: Makefile Procfile
-	curl -o weber --compressed http://files.int.s-cloud.net/weber/weber-$(shell uname)-$(shell uname -m)
+	curl -o weber --compressed http://$(WEBER_HOST)/weber/weber-$(shell uname)-$(shell uname -m)
 	chmod +x weber
 
 clean:
