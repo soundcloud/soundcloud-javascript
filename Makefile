@@ -5,6 +5,7 @@ DESTDIR=system
 TMP=.tmp
 
 build: build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
+	echo "ok" > build/desktop
 	test -z "$(WEBER_HOST)" || $(MAKE) weber
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
