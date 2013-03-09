@@ -69,7 +69,9 @@ window.SC = SC.Helper.merge SC || {},
     # add scheme & host if relative
     if uri.isRelative()
       uri.host = this.hostname("api")
-      uri.scheme = "http"
+      # keep this window's protocol - this removes the ":" from "https:" or
+      # "http:"
+      uri.scheme = window.location.protocol[..-2]
 
     # add client_id or oauth access token
     if this.accessToken()?
