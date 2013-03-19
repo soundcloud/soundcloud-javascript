@@ -2,7 +2,7 @@
 ## Introduction
 
 The SoundCloud JavaScript SDK lets you easily integrate SoundCloud into your website or web app. 
-It's full documentation can be found [here](http://developers.soundcloud.com/docs/javascript-sdk).
+Its full documentation can be found [here](http://developers.soundcloud.com/docs/javascript-sdk).
 In most case it's highly recommended that you use the hosted version from [http://connect.soundcloud.com/sdk.js](http://connect.soundcloud.com/sdk.js) in your website. This README provides development related informations.
 
 
