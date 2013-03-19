@@ -78,3 +78,5 @@ $(TMP)/$(NODEJS)/config.gypi: $(TMP)/$(NODEJS)/configure
 
 $(DESTDIR)/usr/bin/node: $(TMP)/$(NODEJS)/config.gypi
 	PORTABLE=1 make -j4 -C $(TMP)/$(NODEJS) DESTDIR=$(PWD)/$(DESTDIR) install
+
+.PHONY: build build_coffee build_deps build_dialogs build_examples build_legacy build_recorder_js build_soundmanager2 build_tests build_uri_js build_vendor clean minify pkgignore prepare_build_dir
