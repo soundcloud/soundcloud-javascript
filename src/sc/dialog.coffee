@@ -136,6 +136,7 @@ window.SC = SC.Helper.merge SC || {},
         uri = super
         uri.scheme = "https"
         uri.host = "soundcloud.com"
+        uri.port = undefined
         uri.path = "/connect"
         uri.query = uri.fragment
         uri.fragment = {}

@@ -10,6 +10,3 @@
 [submodule "vendor/legacy"]
 	path = vendor/legacy
 	url = git@github.com:soundcloud/sc-connect.git
-[submodule "vendor/dialogs"]
-	path = vendor/dialogs
-	url = git@github.com:soundcloud/dialogs.git

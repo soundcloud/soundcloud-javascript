@@ -37,16 +37,12 @@ build_uri_js:
 build_legacy:
 	cp -R vendor/legacy/* $(BUILD_DIR)/
 
-build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
+build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_legacy
 
 build_coffee:
 	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) node_modules/coffee-script/bin/coffee --join /tmp/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
 	cat /tmp/sdk.unminified.js >> $(BUILD_DIR)/sdk.unminified.js
 	rm -rf /tmp/sdk.unminified.js
-
-build_dialogs:
-	mkdir -p $(BUILD_DIR)/dialogs
-	cp -R vendor/dialogs/* $(BUILD_DIR)/dialogs/
 
 build_examples:
 	cp -R examples $(BUILD_DIR)/
