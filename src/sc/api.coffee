@@ -1,7 +1,7 @@
 window.SC = SC.Helper.merge SC || {},
   _apiRequest: (method, path, query, callback) ->
     if !callback?
-      callback = query 
+      callback = query
       query = undefined
     query ||= {}
     uri = SC.prepareRequestURI(path, query)

@@ -1,4 +1,4 @@
-TestSuite = 
+TestSuite =
   compiledSrc: "../sdk.js"
   tests: ["helper-test.coffee", "sc-test.coffee", "sc/api-test.coffee", "sc/stream-test.coffee", "integration.coffee", "sc/dialog-test.coffee", "sc/loader-test.coffee"]
 

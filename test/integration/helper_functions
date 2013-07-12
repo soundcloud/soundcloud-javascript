@@ -6,7 +6,7 @@ function returns {
   echo $header | head -n1 | grep -q $1 && echo $header
 }
 
-# Checks whether this url can be cached by checking for 
+# Checks whether this url can be cached by checking for
 # Cache-Control: public
 #
 # Use with head request curl:

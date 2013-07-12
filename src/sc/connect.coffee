@@ -35,8 +35,8 @@ window.SC = SC.Helper.merge SC || {},
 
   disconnect: ->
     this.accessToken(null);
-  
-  _trigger: (eventName, argument) -> 
+
+  _trigger: (eventName, argument) ->
     this.connectCallbacks[eventName](argument) if this.connectCallbacks[eventName]?
 
   accessToken: (value) ->

@@ -116,7 +116,7 @@ asyncTest "Playback of a track by id within whenStreamingReady with an ontimedco
         ok(true, "Playback started")
 
 asyncTest "Playback of a private track using a secret token", 1, ->
-  SC.stream "/tracks/" + fixturePrivateTrackId + "?secret_token=" + fixturePrivateTrackToken, 
+  SC.stream "/tracks/" + fixturePrivateTrackId + "?secret_token=" + fixturePrivateTrackToken,
     autoPlay: true
     volume: 0
     onload: () ->
