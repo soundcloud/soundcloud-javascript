@@ -11,10 +11,10 @@
   "engines": {
     "node": ">v0.6.13"
   },
-  "dependencies": {}, 
+  "dependencies": {},
   "devDependencies": {
     "coffee-script": ">1.1.2",
-    "uglify-js": "=1.1.1",
+    "uglify-js": "~2",
     "jslint": "=0.1.0"
   }
 }
