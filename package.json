@@ -15,6 +15,6 @@
   "devDependencies": {
     "coffee-script": ">1.1.2",
     "uglify-js": "~2",
-    "jslint": "=0.1.0"
+    "jslint": "~0.1"
   }
 }
