@@ -7,7 +7,7 @@ window.SC = SC.Helper.merge SC || {},
     query ||= {}
     query.url = trackUrl
 
-    uri = new SC.URI("http://" + SC.hostname() + "/oembed.json")
+    uri = new SC.URI(window.location.protocol + "//" + SC.hostname() + "/oembed.json")
     uri.query = query
 
     # rewrite callback if it's a DOM
