@@ -64,7 +64,7 @@ window.SC = SC.Helper.merge SC || {},
         @id = @generateId()
 
       buildURI: (uri=new SC.URI(SC._baseUrl)) ->
-        uri.scheme = "http"
+        uri.scheme = window.location.protocol.slice(0, -1)
         uri.path += SC._dialogsPath + "/" + @name + "/"
 
         uri.fragment =
