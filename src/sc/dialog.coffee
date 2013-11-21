@@ -76,6 +76,7 @@ window.SC = SC.Helper.merge SC || {},
         for paramKey in @PARAM_KEYS
           uri.fragment[paramKey] = @options[paramKey] if @options[paramKey]?
 
+        uri.port = null
         uri
 
       open: ->

@@ -15,6 +15,8 @@ TestSuite =
     @loadJavascript @compiledSrc, =>
       @setTestsFromParams()
       SC._baseUrl = "http://" + window.location.hostname
+      if window.location.port != "80"
+        SC._baseUrl += ":" + window.location.port
       SC.initialize
         client_id: "YOUR_CLIENT_ID"
         redirect_uri: "/examples/callback.html"
