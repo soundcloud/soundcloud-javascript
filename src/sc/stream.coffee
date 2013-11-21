@@ -1,62 +1,69 @@
 window.SC = SC.Helper.merge SC || {},
-  _soundmanagerPath: "/soundmanager2"
-  _soundmanagerScriptPath: "/soundmanager2.js"
+  _audiomanagerPath: "/audiomanager"
+  _audiomanagerScriptPath: "/audiomanager.js"
+  _players:  []
+
   whenStreamingReady: (callback) ->
     SC.Loader.packages.streaming.whenReady callback
 
-  _prepareStreamUrl: (idOrUrl) ->
-    if idOrUrl.toString().match /^\d.*$/ # legacy rewrite from id to path
-      url = "/tracks/" + idOrUrl
-    else
-      url = idOrUrl
-    preparedUrl = SC.prepareRequestURI(url)
-    preparedUrl.path += "/stream" if !preparedUrl.path.match(/\/stream/)
-    preparedUrl.toString()
+  _setOnPositionListenersForComments: (player, comments, callback) ->
+    window.group = SC.Helper.groupBy(comments, "timestamp")
+    window.player = player
+    player.on 'positionChange', (current, loaded, duration) =>
+      lookup = parseInt(current, 10).toString()
+      callback(window.group[lookup]) if window.group.hasOwnProperty(lookup)
 
-  _setOnPositionListenersForComments: (sound, comments, callback) ->
-    group = SC.Helper.groupBy(comments, "timestamp")
-    for timestamp, commentBatch of group
-      do (timestamp, commentBatch, callback) ->
-        sound.onposition parseInt(timestamp, 10), () ->
-          callback(commentBatch)
+  _prepareStreamUrl: (idOrUrl) ->
+    if idOrUrl.toString().match /^\d.*$/
+      return "/tracks/#{idOrUrl}/streams"
+    uri = new SC.URI(idOrUrl, {decodeQuery: true})
+    suffix = "/streams"
+    if uri.path.indexOf(suffix, uri.path.length - suffix.length) == -1
+      uri.path += suffix
+    uri.toString()
 
   stream: (idOrUrl, optionsOrCallback, callback) ->
     a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
     options = a.options; callback = a.callback
+    options.id = "T" + idOrUrl + "-" + Math.random()
 
-    SC.whenStreamingReady =>
-      options.id = "T" + idOrUrl + "-" + Math.random()
-      options.url = @_prepareStreamUrl(idOrUrl)
-
+    @whenStreamingReady =>
       createAndCallback = (options) =>
-        sound = soundManager.createSound(options)
-        callback(sound) if callback?
-        sound
+        player = audioManager.createAudioPlayer(options)
+        callback(player) if callback?
+        player
 
-      if ontimedcommentsCallback = options.ontimedcomments
-        delete options.ontimedcomments
-        SC._getAll options.url.replace("/stream", "/comments"), (comments) =>
-          sound = createAndCallback(options)
-          @_setOnPositionListenersForComments(sound, comments, ontimedcommentsCallback)
-      else
-        createAndCallback(options)
+      url = if idOrUrl.toString().match /^\d.*$/ then "/tracks/" + idOrUrl else idOrUrl
+      streamsUrl = @_prepareStreamUrl(url)
+
+      SC.get url, (track) ->
+        SC.get streamsUrl, (streams) ->
+          options.src = streams.http_mp3_128_url || streams.rtmp_mp3_128_url
+          options.duration = track.duration
+          if ontimedcommentsCallback = options.ontimedcomments
+            delete options.ontimedcomments
+            SC._getAll url + "/comments", (comments) =>
+              player = createAndCallback(options)
+              group = SC.Helper.groupBy(comments, "timestamp")
+              player.on 'positionChange', (current, loaded, duration) =>
+                collection = []
+                for key in Object.keys(group)
+                  break if key > parseInt(current, 10)
+                  collection.push(group[key])
+                  delete group[key]
+                collection = [].concat.apply([], collection)
+                ontimedcommentsCallback(collection)
+          else
+            createAndCallback(options)
 
   streamStopAll: ->
-    if window.soundManager?
-      window.soundManager.stopAll()
+    if window.audioManager?
+      for player in window.audioManager._players
+        player.pause()
 
 SC.Loader.registerPackage new SC.Loader.Package "streaming", ->
-  if window.soundManager?
+  audioManagerURL = SC._baseUrl + SC._audiomanagerPath
+  SC.Helper.loadJavascript audioManagerURL + SC._audiomanagerScriptPath, ->
+    window.audioManager = new AudioManager
+      flashAudioPath: SC._audiomanagerPath + '/flashAudio.swf'
     SC.Loader.packages.streaming.setReady()
-  else
-    soundManagerURL = SC._baseUrl + SC._soundmanagerPath
-    window.SM2_DEFER = true;
-    SC.Helper.loadJavascript soundManagerURL + SC._soundmanagerScriptPath, ->
-      window.soundManager = new SoundManager()
-      soundManager.url = soundManagerURL;
-      soundManager.flashVersion = 9;
-      soundManager.useFlashBlock = false;
-      soundManager.useHTML5Audio = false;
-      soundManager.beginDelayedInit()
-      soundManager.onready ->
-        SC.Loader.packages.streaming.setReady()
