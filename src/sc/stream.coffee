@@ -34,6 +34,9 @@ window.SC = SC.Helper.merge SC || {},
     @whenStreamingReady =>
       createAndCallback = (options) =>
         player = audioManager.createAudioPlayer(options)
+        player.stop = ->
+          @pause()
+          @seek(0)
         callback(player) if callback?
         player
 
