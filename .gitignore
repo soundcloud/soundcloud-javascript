@@ -1,6 +1,5 @@
 .DS_Store
 /.npm/
-/.pkgignore
 /.tmp/
 /build/
 /node_modules
