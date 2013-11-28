@@ -30,6 +30,7 @@ build_soundmanager2:
 	mkdir -p $(BUILD_DIR)/soundmanager2
 	cp vendor/soundmanager2/script/soundmanager2-nodebug-jsmin.js $(BUILD_DIR)/soundmanager2/soundmanager2.js
 	unzip -j -o vendor/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d $(BUILD_DIR)/soundmanager2/
+	cp vendor/soundmanager2/swf/soundmanager2_flash9_debug.swf $(BUILD_DIR)/soundmanager2/soundmanager2_flash9_debug.swf
 
 build_audiomanager:
 	mkdir -p $(BUILD_DIR)/audiomanager
