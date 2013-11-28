@@ -41,6 +41,10 @@ window.SC = SC.Helper.merge SC || {},
       else
         createAndCallback(options)
 
+  streamStopAll: ->
+    if window.soundManager?
+      window.soundManager.stopAll()
+
 SC.Loader.registerPackage new SC.Loader.Package "streaming", ->
   if window.soundManager?
     SC.Loader.packages.streaming.setReady()
