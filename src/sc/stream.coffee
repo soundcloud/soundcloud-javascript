@@ -1,12 +1,47 @@
-window.SC = SC.Helper.merge SC || {},
-  _audiomanagerPath: "/audiomanager"
-  _audiomanagerScriptPath: "/audiomanager.js"
-
+class Handler
   whenStreamingReady: (callback) ->
     SC.Loader.packages.streaming.whenReady callback
 
   _isNumericId: (idOrUrl) ->
-    return idOrUrl.toString().match /^\d.*$/
+    idOrUrl.toString().match /^\d.*$/
+
+class SoundManagerHandler extends Handler
+
+  _prepareStreamUrl: (idOrUrl) ->
+    if @_isNumericId(idOrUrl)
+      url = "/tracks/#{idOrUrl}"
+    else
+      url = idOrUrl
+    preparedUrl = SC.prepareRequestURI(url)
+    preparedUrl.path += "/stream" if !preparedUrl.path.match(/\/stream/)
+    preparedUrl.toString()
+
+  _setOnPositionListenersForComments: (sound, comments, callback) ->
+    group = SC.Helper.groupBy(comments, "timestamp")
+    for timestamp, commentBatch of group
+      do (timestamp, commentBatch, callback) ->
+        sound.onposition parseInt(timestamp, 10), () ->
+          callback(commentBatch)
+
+  stream: (idOrUrl, options, callback) ->
+    @whenStreamingReady =>
+      options.id = "T" + idOrUrl + "-" + Math.random()
+      options.url = @_prepareStreamUrl(idOrUrl)
+
+      createAndCallback = (options) =>
+        sound = soundManager.createSound(options)
+        callback(sound) if callback?
+        sound
+
+      if ontimedcommentsCallback = options.ontimedcomments
+        delete options.ontimedcomments
+        SC._getAll options.url.replace("/stream", "/comments"), (comments) =>
+          sound = createAndCallback(options)
+          @_setOnPositionListenersForComments(sound, comments, ontimedcommentsCallback)
+      else
+        createAndCallback(options)
+
+class AudioManagerHandler extends Handler
 
   _prepareStreamUrl: (idOrUrl) ->
     return "/tracks/#{idOrUrl}/streams" if @_isNumericId(idOrUrl)
@@ -26,9 +61,7 @@ window.SC = SC.Helper.merge SC || {},
       collection = [].concat.apply([], collection)
       callback(collection)
 
-  stream: (idOrUrl, optionsOrCallback, callback) ->
-    a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
-    options = a.options; callback = a.callback
+  stream: (idOrUrl, options, callback) ->
     options.id = "T" + idOrUrl + "-" + Math.random()
 
     @whenStreamingReady =>
@@ -37,6 +70,9 @@ window.SC = SC.Helper.merge SC || {},
         player.stop = ->
           @pause()
           @seek(0)
+        if player.getState() == "initialize" or player.getState() == "loading"
+          player.on 'stateChange', (state) ->
+            player.play() if state == "idle"
         callback(player) if callback?
         player
 
@@ -56,9 +92,36 @@ window.SC = SC.Helper.merge SC || {},
           else
             createAndCallback(options)
 
+
+window.SC = SC.Helper.merge SC || {},
+  stream: (idOrUrl, optionsOrCallback, callback) ->
+    a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
+    options = a.options; callback = a.callback
+    handler = if options.enableRTMP then new AudioManagerHandler else new SoundManagerHandler
+    handler.stream(idOrUrl, a.options, a.callback)
+
+  streamStopAll: ->
+    if window.soundManager?
+      window.soundManager.stopAll()
+
 SC.Loader.registerPackage new SC.Loader.Package "streaming", ->
-  audioManagerURL = SC._baseUrl + SC._audiomanagerPath
-  SC.Helper.loadJavascript audioManagerURL + SC._audiomanagerScriptPath, ->
+  window.SM2_DEFER = true;
+  scriptUrls =
+    'audiomanager': SC._baseUrl + '/audiomanager/audiomanager.js',
+    'soundmanager2': SC._baseUrl + '/soundmanager2/soundmanager2.js'
+  SC.Helper.loadJavascript scriptUrls.audiomanager, ->
     window.audioManager = new AudioManager
-      flashAudioPath: SC._audiomanagerPath + '/flashAudio.swf'
-    SC.Loader.packages.streaming.setReady()
+      flashAudioPath: '/audiomanager/flashAudio.swf'
+    if window.soundManager?
+      SC.Loader.packages.streaming.setReady()
+    else
+      SC.Helper.loadJavascript scriptUrls.soundmanager2, ->
+        window.soundManager = new SoundManager({debugFlash: false})
+        soundManager.url = SC._baseUrl + '/soundmanager2'
+        soundManager.debugFlash = false
+        soundManager.flashVersion = 9
+        soundManager.useFlashBlock = false
+        soundManager.useHTML5Audio = false
+        soundManager.beginDelayedInit()
+        soundManager.onready ->
+          SC.Loader.packages.streaming.setReady()
