@@ -30,13 +30,6 @@ build_soundmanager2:
 	mkdir -p $(BUILD_DIR)/soundmanager2
 	cp vendor/soundmanager2/script/soundmanager2-nodebug-jsmin.js $(BUILD_DIR)/soundmanager2/soundmanager2.js
 	unzip -j -o vendor/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d $(BUILD_DIR)/soundmanager2/
-	cp vendor/soundmanager2/swf/soundmanager2_flash9_debug.swf $(BUILD_DIR)/soundmanager2/soundmanager2_flash9_debug.swf
-
-build_audiomanager:
-	mkdir -p $(BUILD_DIR)/audiomanager
-	cp vendor/audiomanager.js $(BUILD_DIR)/audiomanager/audiomanager.js
-	cp vendor/audiomanager_mobile.js $(BUILD_DIR)/audiomanager/audiomanager_mobile.js
-	cp vendor/flashAudio.swf $(BUILD_DIR)/audiomanager/flashAudio.swf
 
 build_uri_js:
 	cat vendor/uri.js/build/uri.js | sed -e 's/window.URI/window.SC = window.SC || {}; window.SC.URI/g' >> $(BUILD_DIR)/sdk.unminified.js
@@ -44,7 +37,7 @@ build_uri_js:
 build_legacy:
 	cp -R vendor/legacy/* $(BUILD_DIR)/
 
-build_vendor: build_recorder_js build_audiomanager build_soundmanager2 build_uri_js build_dialogs build_legacy
+build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
 
 build_coffee:
 	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) node_modules/coffee-script/bin/coffee --join /tmp/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
