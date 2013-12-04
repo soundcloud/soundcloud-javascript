@@ -2,19 +2,21 @@ BUILD_DIR=build
 NODEJS_VERSION=0.8.9
 NODEJS=nodejs-0.8.9
 DESTDIR=system
+RELEASES_DIR=releases
+VERSION=2.0.0
 TMP=.tmp
 
-build: build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify pkgignore
+build: build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify make_release pkgignore
 	echo "ok" > build/desktop
 	test -z "$(WEBER_HOST)" || $(MAKE) weber
 	git log | head -n1 > $(BUILD_DIR)/commit.txt
 	echo "done"
 
 pkgignore:
-	find . -mindepth 1 -maxdepth 1 | grep -v $(BUILD_DIR) | grep -v weber | sed 's/^\.\///' > .pkgignore
+	find . -mindepth 1 -maxdepth 1 | grep -v $(RELEASES_DIR) | grep -v $(BUILD_DIR) | grep -v weber | sed 's/^\.\///' > .pkgignore
 
 prepare_build_dir:
-	rm -rf $(BUILD_DIR)/sdk.unminified.js
+	rm -rf $(BUILD_DIR)/sdk-$(VERSION).unminified.js
 	mkdir -p $(BUILD_DIR)
 
 build_deps: $(DESTDIR)/usr/bin/node
@@ -24,7 +26,7 @@ build_recorder_js:
 	mkdir -p $(BUILD_DIR)/recorder.js
 	cp vendor/recorder.js/soundcloudRecorder.swf $(BUILD_DIR)/recorder.js/recorder-0.8.swf
 	cp vendor/recorder.js/soundcloudRecorder.swf $(BUILD_DIR)/recorder.js/recorder-`cat vendor/recorder.js/VERSION`.swf
-	cat vendor/recorder.js/recorder.js >> $(BUILD_DIR)/sdk.unminified.js
+	cat vendor/recorder.js/recorder.js >> $(BUILD_DIR)/sdk-$(VERSION).unminified.js
 
 build_soundmanager2:
 	mkdir -p $(BUILD_DIR)/soundmanager2
@@ -32,7 +34,7 @@ build_soundmanager2:
 	unzip -j -o vendor/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d $(BUILD_DIR)/soundmanager2/
 
 build_uri_js:
-	cat vendor/uri.js/build/uri.js | sed -e 's/window.URI/window.SC = window.SC || {}; window.SC.URI/g' >> $(BUILD_DIR)/sdk.unminified.js
+	cat vendor/uri.js/build/uri.js | sed -e 's/window.URI/window.SC = window.SC || {}; window.SC.URI/g' >> $(BUILD_DIR)/sdk-$(VERSION).unminified.js
 
 build_legacy:
 	cp -R vendor/legacy/* $(BUILD_DIR)/
@@ -40,9 +42,9 @@ build_legacy:
 build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
 
 build_coffee:
-	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) node_modules/coffee-script/bin/coffee --join /tmp/sdk.unminified.js --compile src/*.coffee src/sc/*.coffee
-	cat /tmp/sdk.unminified.js >> $(BUILD_DIR)/sdk.unminified.js
-	rm -rf /tmp/sdk.unminified.js
+	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) node_modules/coffee-script/bin/coffee --join /tmp/sdk-$(VERSION).unminified.js --compile src/*.coffee src/sc/*.coffee
+	cat /tmp/sdk-$(VERSION).unminified.js >> $(BUILD_DIR)/sdk-$(VERSION).unminified.js
+	rm -rf /tmp/sdk-$(VERSION).unminified.js
 
 build_dialogs:
 	mkdir -p $(BUILD_DIR)/dialogs
@@ -55,7 +57,12 @@ build_tests:
 	cp -R test $(BUILD_DIR)/
 
 minify:
-	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) ./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk.unminified.js > $(BUILD_DIR)/sdk.js
+	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) ./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk-$(VERSION).unminified.js > $(BUILD_DIR)/sdk-$(VERSION).js
+
+make_release:
+	cp $(BUILD_DIR)/sdk-$(VERSION).js $(RELEASES_DIR)
+	cp $(RELEASES_DIR)/*.js $(BUILD_DIR)
+	cp $(BUILD_DIR)/sdk-$(VERSION).js $(BUILD_DIR)/sdk-latest.js
 
 weber: Makefile Procfile
 	curl -o weber --compressed http://$(WEBER_HOST)/weber/weber-$(shell uname)-$(shell uname -m)

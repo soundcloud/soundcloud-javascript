@@ -1,62 +1,96 @@
+class Player
+  constructor: (@_player) ->
+
+  play: (position) ->
+    if @_player.getState() == "loading" or @_player.getState() == "initialize"
+      @_player.on 'stateChange', (state) ->
+        @play() if state == "idle"
+    else
+      @_player.play()
+
+  stop: ->
+    @_player.pause()
+    @_player.seek(0)
+
+  pause: -> @_player.pause()
+  seek: (ms) -> @_player.seek(ms)
+  setVolume: (volume) -> @_player.setVolume(volume)
+  getVolume: -> @_player.getVolume()
+  getType: -> @_player.getType()
+  getCurrentPosition: -> @_player.getCurrentPosition()
+  getLoadedPosition: -> @_player.getLoadedPosition()
+  getDuration: -> @_player.getDuration()
+  getState: -> @_player.getState()
+
 window.SC = SC.Helper.merge SC || {},
-  _soundmanagerPath: "/soundmanager2"
-  _soundmanagerScriptPath: "/soundmanager2.js"
+
   whenStreamingReady: (callback) ->
     SC.Loader.packages.streaming.whenReady callback
 
-  _prepareStreamUrl: (idOrUrl) ->
-    if idOrUrl.toString().match /^\d.*$/ # legacy rewrite from id to path
-      url = "/tracks/" + idOrUrl
-    else
-      url = idOrUrl
+  _isNumeric: (idOrUrl) ->
+    idOrUrl.toString().match /^\d.*$/
+
+  _prepareTrackUrl: (idOrUrl) ->
+    url = if @_isNumeric(idOrUrl) then "/tracks/#{idOrUrl}" else idOrUrl
     preparedUrl = SC.prepareRequestURI(url)
-    preparedUrl.path += "/stream" if !preparedUrl.path.match(/\/stream/)
     preparedUrl.toString()
 
-  _setOnPositionListenersForComments: (sound, comments, callback) ->
+  _prepareStreamUrl: (idOrUrl) ->
+    url = if @_isNumeric(idOrUrl) then "/tracks/#{idOrUrl}" else idOrUrl
+    preparedUrl = SC.prepareRequestURI(url)
+    preparedUrl.path += "/streams" if !preparedUrl.path.match(/\/stream/)
+    preparedUrl.toString()
+
+  _setOnPositionListenersForComments: (player, comments, callback) ->
     group = SC.Helper.groupBy(comments, "timestamp")
-    for timestamp, commentBatch of group
-      do (timestamp, commentBatch, callback) ->
-        sound.onposition parseInt(timestamp, 10), () ->
-          callback(commentBatch)
+    player._player.on 'positionChange', (current, loaded, duration) ->
+      collection = []
+      for key in Object.keys(group)
+        break if key > parseInt(current, 10)
+        collection.push(group[key])
+        delete group[key]
+      collection = [].concat.apply([], collection)
+      callback(collection)
 
   stream: (idOrUrl, optionsOrCallback, callback) ->
     a = SC.Helper.extractOptionsAndCallbackArguments(optionsOrCallback, callback)
     options = a.options; callback = a.callback
 
-    SC.whenStreamingReady =>
-      options.id = "T" + idOrUrl + "-" + Math.random()
-      options.url = @_prepareStreamUrl(idOrUrl)
+    options.id = "T" + idOrUrl + "-" + Math.random()
+    track_url = @_prepareTrackUrl(idOrUrl)
+    stream_url = @_prepareStreamUrl(idOrUrl)
 
-      createAndCallback = (options) =>
-        sound = soundManager.createSound(options)
-        callback(sound) if callback?
-        sound
+    SC.whenStreamingReady ->
+      SC.get track_url, (track) ->
+        options.duration = track.duration
+        SC.get stream_url, (streams) ->
+          options.src = streams.http_mp3_128_url || streams.rtmp_mp3_128_url
 
-      if ontimedcommentsCallback = options.ontimedcomments
-        delete options.ontimedcomments
-        SC._getAll options.url.replace("/stream", "/comments"), (comments) =>
-          sound = createAndCallback(options)
-          @_setOnPositionListenersForComments(sound, comments, ontimedcommentsCallback)
-      else
-        createAndCallback(options)
+          createAndCallback = (options) =>
+            player = new Player(audioManager.createAudioPlayer(options))
+            callback(player) if callback?
+            player
+
+          if ontimedcommentsCallback = options.ontimedcomments
+            delete options.ontimedcomments
+            SC._getAll track_url + "/comments", (comments) ->
+              player = createAndCallback(options)
+              SC._setOnPositionListenersForComments(player, comments, ontimedcommentsCallback)
+          else
+            createAndCallback(options)
 
   streamStopAll: ->
-    if window.soundManager?
-      window.soundManager.stopAll()
+    if window.audioManager?
+      for player in window.audioManager._players
+        player.pause()
+        player.seek(0)
 
 SC.Loader.registerPackage new SC.Loader.Package "streaming", ->
-  if window.soundManager?
+  if window.audioManager?
     SC.Loader.packages.streaming.setReady()
   else
-    soundManagerURL = SC._baseUrl + SC._soundmanagerPath
-    window.SM2_DEFER = true;
-    SC.Helper.loadJavascript soundManagerURL + SC._soundmanagerScriptPath, ->
-      window.soundManager = new SoundManager()
-      soundManager.url = soundManagerURL;
-      soundManager.flashVersion = 9;
-      soundManager.useFlashBlock = false;
-      soundManager.useHTML5Audio = false;
-      soundManager.beginDelayedInit()
-      soundManager.onready ->
-        SC.Loader.packages.streaming.setReady()
+    audioManagerURL = SC._baseUrl + '/audiomanager'
+    SC.Helper.loadJavascript audioManagerURL + '/audiomanager.js', ->
+      window.audioManager = new AudioManager
+        flashAudioPath: SC._baseUrl + '/audiomanager/flashAudio.swf'
+      SC.Loader.packages.streaming.setReady()
