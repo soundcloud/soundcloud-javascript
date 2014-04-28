@@ -42,7 +42,7 @@ For `sdk.js` to work **it must be accessed from `http://connect.soundcloud.dev`*
 
 To run the tests, just start an HTTP server in the project root and navigate to `http://yourhost/test/test.html`.
 In development mode the tests will automatically compile the coffeescript on each reload.
-In build mode the tests will laod the compiled sdk.js.
+In build mode the tests will load the compiled sdk.js.
 
 ## Repository Structure
 
