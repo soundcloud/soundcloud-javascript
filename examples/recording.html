@@ -1,128 +1,35 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html>
   <head>
-    <title>SoundCloud JavaScript SDK Examples</title>
-    <link href="http://importer.soundcloudlabs.com/stylesheets/labs.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="examples.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    <script src="examples.js"></script>
+    <meta charset="utf-8">
+    <title>SDK playground - Recording</title>
+    <script type="text/javascript" src="../sdk.js"></script>
+    <link rel="stylesheet" href="recording.css" media="screen" charset="utf-8">
+    <script type="text/javascript" src="https://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
   </head>
   <body>
-<textarea class="exampleSource"><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="//connect.soundcloud.com/sdk.js"></script>
-<script>
-  SC.initialize({
-    client_id: "c202b469a633a7a5b15c9e10b5272b78",
-    redirect_uri: "http://connect.soundcloud.com/examples/callback.html"
-  });
+    <canvas id="canvas"></canvas>
+    <video id="video"></video>
 
-  $("#recorderUI.reset #controlButton").live("click", function(e){
-    updateTimer(0);
-    SC.record({
-      start: function(){
-        setRecorderUIState("recording");
-      },
-      progress: function(ms, avgPeak){
-        updateTimer(ms);
-      }
-    });
-    e.preventDefault();
-  });
-
-  $("#recorderUI.recording #controlButton, #recorderUI.playing #controlButton").live("click", function(e){
-    setRecorderUIState("recorded");
-    SC.recordStop();
-    e.preventDefault();
-  });
-
-  $("#recorderUI.recorded #controlButton").live("click", function(e){
-    updateTimer(0);
-    setRecorderUIState("playing");
-    SC.recordPlay({
-      progress: function(ms){
-        updateTimer(ms);
-      },
-      finished: function(){
-        setRecorderUIState("recorded");
-      }
-    });
-    e.preventDefault();
-  });
-
-  $("#reset").live("click", function(e){
-    SC.recordStop();
-    setRecorderUIState("reset");
-    e.preventDefault();
-  });
-
-  $("#upload").live("click", function(e){
-    setRecorderUIState("uploading");
-
-    SC.connect({
-      connected: function(){
-        $("#uploadStatus").html("Uploading...");
-        SC.recordUpload({
-          track: {
-            title: "Untitled Recording",
-            sharing: "private"
-          }
-        }, function(track){
-          $("#uploadStatus").html("Uploaded: <a href='" + track.permalink_url + "'>" + track.permalink_url + "</a>");
-        });
-      }
-    });
-
-    e.preventDefault();
-  });
-
-  function updateTimer(ms){
-    $("#timer").text(SC.Helper.millisecondsToHMS(ms));
-  }
-
-  function setRecorderUIState(state){
-    // state can be reset, recording, recorded, playing, uploading
-    // visibility of buttons is managed via CSS
-    $("#recorderUI").attr("class", state);
-  }
-</script>
-
-<div id="recorderUI" class="reset">
-  <a href="#" id="controlButton" class="record"><span id="timer" class="hidden">0:00</span></a>
-  <div id="otherControls">
-    <a href="#" id="reset" class="button">Reset</a>
-    <a href="#" id="upload" class="button">Upload</a>
-  </div>
-  <div id="uploadStatus"></div>
-</div>
-
-</textarea>
-    <div id="page">
-      <div id="header">
-        <a href="/"><h1>SoundCloud JavaScript SDK Examples</h1></a>
-      </div>
-      <div class="content">
-        <div class="tab-ui">
-          <ul class="tabs">
-            <li class="first"><a href="basic.html">Basic</a></li>
-            <li class="first"><a href="connecting.html">Connecting</a></li>
-            <li class="first"><a href="streaming.html">Streaming</a></li>
-            <li class="first current"><a href="recording.html">Recording</a></li>
-          </ul>
-        </div>
-        <div id="left">
-          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
-            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
-
-          <p>This example shows how to record audio and upload it to SoundCloud. </p>
-          <div class="example">
-          </div>
-        </div>
-        <div id="right"><pre><code></code></pre></div>
+    <div id="recording">recording</div>
+    <div id="overlay">
+      <div id="message">
+        <p>
+          This app demonstrates how to record and upload songs with the SoundCloud SDK.
+        </p>
+        <p>
+          After connecting your account, it will record audio as long as you press down on the video.
+        </p>
+        <p>
+          Once you release the video, it will take a snapshot and stop the recording.
+        </p>
+        <p>
+          Then it uploads both to SoundCloud as private track :)
+        </p>
+        <div id="connect" class="button">Connect</div>
       </div>
     </div>
+
+    <script type="text/javascript" src="recording.js"></script>
   </body>
 </html>

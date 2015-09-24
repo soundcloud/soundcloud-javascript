@@ -1,87 +1,59 @@
-BUILD_DIR=build
-NODEJS_VERSION=0.12.7
-NODEJS=nodejs-0.12.7
-DESTDIR=system
-RELEASES_DIR=releases
-VERSION=2.0.0
-TMP=.tmp
+OS             := $(shell uname)
 
-build: build_deps prepare_build_dir build_vendor build_coffee build_examples build_tests minify make_release pkgignore
-	echo "ok" > build/desktop
-	test -z "$(WEBER_HOST)" || $(MAKE) weber
-	git log | head -n1 > $(BUILD_DIR)/commit.txt
-	echo "done"
+BUILD_DIR      := $(PWD)/build
+TMP            := $(PWD)/.tmp
+DEP            := $(TMP)/deps
+DESTDIR        := $(BUILD_DIR)/system/$(OS)
+DESTBIN        := $(DESTDIR)/bin
 
-pkgignore:
-	find . -mindepth 1 -maxdepth 1 | grep -v $(RELEASES_DIR) | grep -v $(BUILD_DIR) | grep -v weber | sed 's/^\.\///' > .pkgignore
+NODE_VERSION   := 4.1.0
+NODE_MODULES   := $(PWD)/node_modules
+NODE           := nodejs-$(NODE_VERSION)
+NODE_BIN       := $(DESTBIN)/node
+NPM_BIN        := $(DESTBIN)/npm
+NM_BIN         := $(PWD)/node_modules/.bin
 
-prepare_build_dir:
-	rm -rf $(BUILD_DIR)/sdk-$(VERSION).unminified.js
-	mkdir -p $(BUILD_DIR)
+NODE_HOST      := https://nodejs.org/download/release
+NODE_SRC       := node-v$(NODE_VERSION).tar.gz
 
-build_deps: $(DESTDIR)/usr/bin/node
-	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) npm install
+export PATH := $(DESTBIN):$(NM_BIN):$(PATH)
 
-build_recorder_js:
-	mkdir -p $(BUILD_DIR)/recorder.js
-	cp vendor/recorder.js/soundcloudRecorder.swf $(BUILD_DIR)/recorder.js/recorder-0.8.swf
-	cp vendor/recorder.js/soundcloudRecorder.swf $(BUILD_DIR)/recorder.js/recorder-`cat vendor/recorder.js/VERSION`.swf
-	cat vendor/recorder.js/recorder.js >> $(BUILD_DIR)/sdk-$(VERSION).unminified.js
+.PHONY: build
 
-build_soundmanager2:
-	mkdir -p $(BUILD_DIR)/soundmanager2
-	cp vendor/soundmanager2/script/soundmanager2-nodebug-jsmin.js $(BUILD_DIR)/soundmanager2/soundmanager2.js
-	unzip -j -o vendor/soundmanager2/swf/soundmanager2_flash_xdomain.zip soundmanager2_flash_xdomain/soundmanager2.swf soundmanager2_flash_xdomain/soundmanager2_flash9.swf -d $(BUILD_DIR)/soundmanager2/
+build: $(NODE_BIN)
+	$(NPM_BIN) install
+	$(NPM_BIN) run build
 
-build_uri_js:
-	cat vendor/uri.js/build/uri.js | sed -e 's/window.URI/window.SC = window.SC || {}; window.SC.URI/g' >> $(BUILD_DIR)/sdk-$(VERSION).unminified.js
+test: build
+	$(NPM_BIN) run test
 
-build_legacy:
-	cp -R vendor/legacy/* $(BUILD_DIR)/
+run: build
+	$(NPM_BIN) run serve
 
-build_vendor: build_recorder_js build_soundmanager2 build_uri_js build_dialogs build_legacy
+publish: test
+	IS_NPM=1 $(NPM_BIN) run build
+	$(NPM_BIN) publish
 
-build_coffee:
-	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) node_modules/coffee-script/bin/coffee --join /tmp/sdk-$(VERSION).unminified.js --compile src/*.coffee src/sc/*.coffee
-	cat /tmp/sdk-$(VERSION).unminified.js >> $(BUILD_DIR)/sdk-$(VERSION).unminified.js
-	rm -rf /tmp/sdk-$(VERSION).unminified.js
-
-build_dialogs:
-	mkdir -p $(BUILD_DIR)/dialogs
-	cp -R vendor/dialogs/* $(BUILD_DIR)/dialogs/
-
-build_examples:
-	cp -R examples $(BUILD_DIR)/
-
-build_tests:
-	cp -R test $(BUILD_DIR)/
-
-minify:
-	LD_LIBRARY_PATH=$(DESTDIR)/lib PATH=$(DESTDIR)/usr/bin:$(PATH) HOME=$(PWD) ./node_modules/uglify-js/bin/uglifyjs $(BUILD_DIR)/sdk-$(VERSION).unminified.js > $(BUILD_DIR)/sdk-$(VERSION).js
-
-make_release:
-	cp $(BUILD_DIR)/sdk-$(VERSION).js $(RELEASES_DIR)
-	cp $(RELEASES_DIR)/*.js $(BUILD_DIR)
-	cp $(BUILD_DIR)/sdk-$(VERSION).js $(BUILD_DIR)/sdk-latest.js
-
-weber: Makefile Procfile
-	curl -o weber --compressed http://$(WEBER_HOST)/weber/weber-$(shell uname)-$(shell uname -m)
-	chmod +x weber
+dirs:
+	echo $(DESTDIR)
+	echo $(DESTBIN)
+	echo $(NPM_BIN)
 
 clean:
-	rm -rf $(BUILD_DIR)/* node_modules $(TMP)
+	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* $(TMP) sdk.js
 
 ### nodejs
 $(TMP):
 	mkdir -p $(TMP)
 
-$(TMP)/$(NODEJS)/configure:
-	# nodejs extracts to joyent-nodes-<git-sha> ... let's use a more predictable path
-	mkdir -p $(TMP)/${NODEJS}
-	curl -L https://github.com/joyent/node/tarball/v$(NODEJS_VERSION) | tar xzv -C $(TMP)/$(NODEJS) --strip-components 1
+$(TMP)/$(NODE)/configure:
+	mkdir -p $(TMP)/${NODE}
+	curl -L $(NODE_HOST)/v$(NODE_VERSION)/$(NODE_SRC) | tar xzv -C $(TMP)/$(NODE) --strip-components 1
 
-$(TMP)/$(NODEJS)/config.gypi: $(TMP)/$(NODEJS)/configure
-	cd $(TMP)/$(NODEJS); PKG_CONFIG_PATH=/usr/lib/pkgconfig/openssl.pc ./configure --prefix=/usr
+$(TMP)/$(NODE)/config.gypi: $(TMP)/$(NODE)/configure
+	cd $(TMP)/$(NODE); PKG_CONFIG_PATH=/usr/lib/pkgconfig/openssl.pc ./configure --prefix=$(DESTDIR)
 
-$(DESTDIR)/usr/bin/node: $(TMP)/$(NODEJS)/config.gypi
-	PORTABLE=1 make -j4 -C $(TMP)/$(NODEJS) DESTDIR=$(PWD)/$(DESTDIR) install
+$(NODE_BIN): $(TMP)/$(NODE)/config.gypi
+	PORTABLE=1 make -j4 -C $(TMP)/$(NODE) install
+
+

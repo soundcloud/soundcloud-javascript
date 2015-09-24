@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>SDK playground</title>
+    <script type="text/javascript" src="../sdk.js"></script>
+  </head>
+  <body>
+    <button id="connect">connect</button>
+    <button id="record">record 1s</button>
+    <div id="oembed"></div>
+
+    <script type="text/javascript">
+      SC.initialize({
+        client_id: 'YOUR_CLIENT_ID',
+        redirect_uri: 'http://localhost:8080/callback.html'
+      });
+
+      SC.get('users/forss').then(function(user){console.log('Forss', user);});
+
+      SC.get('tracks/soulhack').then(function(user){console.log('It\'s a deep Soulhack', user);}).catch();
+
+      SC.get('tracks/soulhack-3').then(function(user){console.log('It\'s a deeper Soulhack', user);}).catch(function(error){
+        console.log('catch', error);
+      });
+
+      var connect = function(){
+        SC.connect().then(function(options){console.log('success', options);}).catch(function(op){console.log('error', op);})
+      };
+      document.getElementById('connect').addEventListener('click', connect);
+
+      var oembedElement = document.getElementById('oembed');
+      SC.oEmbed('https://soundcloud.com/forss/soulhack', {element: oembedElement}).then(function(result){
+        console.log('oembed', result);
+      }).catch(function(err){
+        console.log('oembed err', err);
+      });
+
+      var record = function(){
+        window.recorder = new SC.Recorder();
+        recorder.start().then(function(){
+          setTimeout(function() {
+            recorder.stop();
+            recorder.getWAV().then(function(blob){
+              SC.upload({
+                asset_data: blob,
+                title: 'track' + Date.now(),
+                sharing: 'private'
+              }).then(function(track){
+                console.log('uploaded', track);
+              }).catch(function(){
+                console.log('err', arguments);
+              });
+            })
+          }, 1000);
+        }).catch(function(){ console.log('not recording', arguments); });
+      };
+      document.getElementById('record').addEventListener('click', record);
+
+      SC.stream('tracks/soulhack').then(function(player){
+        console.log('loaded the song, access with window.player');
+        window.player = player;
+      });
+
+      SC.resolve('https://soundcloud.com/forss/soulhack').then(function(track){
+        console.log('resolve', track);
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,54 +1,91 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html>
   <head>
-    <title>SoundCloud JavaScript SDK Examples</title>
-    <link href="http://importer.soundcloudlabs.com/stylesheets/labs.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="examples.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    <script src="examples.js"></script>
+    <meta charset="utf-8">
+    <title>SDK playground - Streaming</title>
+    <script type="text/javascript" src="../sdk.js"></script>
+    <style media="screen">
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: sans-serif;
+      }
+
+      input {
+        font-size: 20px;
+      }
+
+      #info {
+        display: none;
+      }
+
+      input, p {
+        width: 90%;
+        margin-bottom: 10px;
+        margin-top: 0;
+      }
+
+      @media (min-width: 500px) {
+        input, p {
+          width: 500px;
+        }
+      }
+    </style>
   </head>
   <body>
-<textarea class="exampleSource"><script src="//connect.soundcloud.com/sdk.js"></script>
-<script>
-  SC.initialize({
-    client_id: "YOUR_CLIENT_ID"
-  });
-
-  $("#stream").live("click", function(){
-    SC.stream("/tracks/293", {autoPlay: true});
-  });
-</script>
-
-<input type="button" href="#" id="stream" class="big button" value="Stream It Again, Sam" />
-</textarea>
-    <div id="page">
-      <div id="header">
-        <a href="/"><h1>SoundCloud JavaScript SDK Examples</h1></a>
-      </div>
-      <div class="content">
-        <div class="tab-ui">
-          <ul class="tabs">
-            <li class="first"><a href="basic.html">Basic</a></li>
-            <li class="first"><a href="connecting.html">Connecting</a></li>
-            <li class="first current"><a href="streaming.html">Streaming</a></li>
-            <li class="first"><a href="recording.html">Recording</a></li>
-          </ul>
-        </div>
-
-        <div id="left">
-          <p>The <b>SoundCloud JavaScript SDK</b> provides essential tools that let you easiliy integrate SoundCloud features like <b>player embedding</b>, <b>audio streaming</b>, <b>audio recording</b> and other actions like <b>following, favoriting and commenting</b> into your website.
-            For more infos have a look at the <a href="http://developers.soundcloud.com/docs/javascript-sdk">docs</a>.</p>
-
-          <p>This example demonstrates how to stream a track from SoundCloud. </p>
-          <div class="example">
-          </div>
-        </div>
-        <div id="right"><pre><code></code></pre></div>
-      </div>
+    <form id="searchForm">
+      <input type="text" id="url" placeholder="A track's URL" autofocus />
+    </form>
+    <div id="info">
+      <span id="title"></span>
+      <button id="play">play</button>
+      <button id="pause">pause</button>
     </div>
+
+
+    <script type="text/javascript">
+      SC.initialize({
+        client_id: 'YOUR_CLIENT_ID'
+      });
+
+      var inputField = document.getElementById('url');
+      var title = document.getElementById('title');
+      var info = document.getElementById('info');
+      var currentPlayer;
+
+      var streamTrack = function(track){
+        return SC.stream('/tracks/' + track.id).then(function(player){
+          title.innerText = track.title;
+          info.style.display = 'inline-block';
+          if (currentPlayer) {
+            currentPlayer.pause();
+          }
+          currentPlayer = player;
+
+          player.play();
+        }).catch(function(){
+          console.log(arguments);
+        });
+      };
+
+      var search = function(event){
+        event.preventDefault();
+        SC.resolve(inputField.value).then(streamTrack);
+      };
+
+      document.getElementById('searchForm').addEventListener('submit', search);
+
+      document.getElementById('pause').addEventListener('click', function(){
+        if (currentPlayer) {
+          currentPlayer.pause();
+        }
+      });
+      document.getElementById('play').addEventListener('click', function(){
+        if (currentPlayer) {
+          currentPlayer.play();
+        }
+      });
+    </script>
   </body>
 </html>

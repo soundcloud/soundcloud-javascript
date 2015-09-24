@@ -1,20 +1,43 @@
 {
-  "author": "SoundCloud Ltd.",
-  "name": "soundcloud-javascript-deps",
-  "description": "dependencies for building soundcloud-javascript",
-  "version": "0.0.1",
-  "homepage": "http://github.com/soundcloud/soundcloud-javascript",
+  "name": "soundcloud",
+  "version": "3.0.0",
+  "description": "",
+  "main": "sdk.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/soundcloud/soundcloud-javascript"
+    "url": "https://github.com/soundcloud/soundcloud-javascript.git"
   },
-  "engines": {
-    "node": ">v0.6.13"
+  "scripts": {
+    "test": "webpack && karma start --single-run",
+    "build": "webpack -p",
+    "start": "IS_NPM=1 webpack-dev-server",
+    "serve": "node ./serve.js"
   },
-  "dependencies": {},
+  "author": "SoundCloud Ltd.",
+  "license": "MIT",
   "devDependencies": {
-    "coffee-script": "=1.6.2",
-    "uglify-js": "=2.3.6",
-    "jslint": "~0.1"
+    "babel-core": "^5.6.15",
+    "babel-loader": "^5.3.0",
+    "chai": "^3.2.0",
+    "eslint": "^1.0.0-rc-1",
+    "karma": "^0.13.3",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.2.0",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sinon": "^1.0.4",
+    "mocha": "^2.2.5",
+    "node-libs-browser": "^0.5.2",
+    "sinon": "^1.15.4",
+    "webpack": "^1.10.1",
+    "webpack-dev-server": "^1.10.1",
+    "worker-loader": "^0.6.0"
+  },
+  "dependencies": {
+    "es6-promise": "^2.3.0",
+    "form-urlencoded": "^0.1.4",
+    "node-static": "^0.7.7",
+    "query-string": "^2.3.0"
   }
 }

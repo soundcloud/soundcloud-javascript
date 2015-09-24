@@ -1,53 +1,24 @@
-# SoundCloud JavaScript SDK
-## Introduction
+# SoundCloud JavaScript Next
 
-The [SoundCloud JavaScript SDK](http://developers.soundcloud.com/docs/javascript-sdk) lets you easily integrate SoundCloud into your website or web app.
+## Building source
 
-**In most cases it's highly recommended that you use the hosted version** from [http://connect.soundcloud.com/sdk.js](http://connect.soundcloud.com/sdk.js) in your website. This README provides development-related information.
+- `make build`
 
-## Dependencies
+This will build and install node from source. Please be patient. :)
 
-- npm
-- - coffee-script
-- - uglify-js
-- - jslint
+By default, the SDK is built into `build/sdk/sdk-VERSION.js`. Take a look at `webpack.config.js` for details.
 
-## Development
+### Building with the watcher
 
-To check out the repository locally and initialize all submodules in `vendor/`, run:
+- `npm start`
 
-```bash
-$ git clone git@github.com:soundcloud/soundcloud-javascript.git
-$ cd soundcloud-javascript
-$ git submodule update --init
-$ npm install
-```
+This will run webpack with a watcher. The sdk will be rebuilt when you save changes in `src`.
 
-To build the release version in `build/`, just run:
+In addition, webpack will start a development server on `http://localhost:8080/`. This serves the files in the `examples/` folder.
 
-```bash
-$ make build
-```
+## Running tests
 
-To run the tests or use `sdk.js`, run this from either the top level of your repo or `build/`:
+- `make test`
 
-```bash
-$ bin/server
-```
+The test suite uses Karma to execute the tests in Chrome, Firefox, and Safari if available.
 
-The file `sdk.js` will automatically compile all coffeescript files in `src/` on the fly when loaded.
-For `sdk.js` to work **it must be accessed from `http://connect.soundcloud.dev`** instead of `http://localhost:9090`.
-
-## Testing
-
-To run the tests, just start an HTTP server in the project root and navigate to `http://yourhost/test/test.html`.
-In development mode the tests will automatically compile the coffeescript on each reload.
-In build mode the tests will load the compiled sdk.js.
-
-## Repository Structure
-
-- `build/` — contains compiled JS (as it's hosted on [http://connect.soundcloud.com](http://connect.soundcloud.com))
-- `src/` — contains coffeescript source code
-- `vendor/` — includes git submodules of external projects
-- `test/` — tests live here
-- `examples/` — here there be examples
