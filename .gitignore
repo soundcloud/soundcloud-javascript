@@ -1,7 +1,6 @@
 .DS_Store
-/.npm/
-/.tmp/
-/build/
-/node_modules
-/system/
-/weber
+sdk.js
+node_modules
+build
+.tmp
+/*.worker.js

@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  color: #fff;
+}
+
+video {
+  position: absolute;
+  z-index: 0;
+  background-size: 100% 100%;
+  top: 0px;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+}
+
+#recording {
+  display: inline-block;
+  z-index: 100;
+  position: absolute;
+  color: #f50;
+  background-color: transparent;
+  right: 15px;
+  top: 15px;
+  opacity: 0;
+  font-size: 20px;
+  transition: .2s opacity linear;
+  text-shadow: 1px 1px rgba(0,0,0,.2);
+}
+
+#recording.visible {
+  opacity: .9;
+}
+
+canvas {
+  z-index: -1;
+  position: absolute;
+}
+
+#overlay {
+  z-index: 1;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  background-color: rgba(0,0,0,.8);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  background-color: #f50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+a {
+  color: #f50;
+  text-decoration: none;
+}
