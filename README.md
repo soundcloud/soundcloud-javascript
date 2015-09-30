@@ -1,5 +1,9 @@
 # SoundCloud JavaScript Next
 
+## Documentation
+
+https://developers.soundcloud.com/docs/api/sdks#javascript
+
 ## Building source
 
 - `make build`
