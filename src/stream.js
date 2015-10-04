@@ -1,7 +1,7 @@
 const api = require('./api');
 const AudioManager = require('../vendor/audiomanager');
 const audioManager = new AudioManager({
-  flashAudioPath: 'https://connect.soundcloud.som/sdk/flashAudio.swf'
+  flashAudioPath: 'https://connect.soundcloud.com/sdk/flashAudio.swf'
 });
 const config = require('./config');
 const SCAudio = require('../vendor/scaudio');
