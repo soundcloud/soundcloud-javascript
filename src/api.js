@@ -2,20 +2,27 @@ const config = require('./config');
 const form = require('form-urlencoded');
 const Promise = require('es6-promise').Promise;
 
-const sendRequest = (method, url, data) => {
+const sendRequest = (method, url, data, progress) => {
   let xhr;
   const requestPromise = new Promise((resolve) => {
     const isFormData = global.FormData && (data instanceof FormData);
     xhr = new XMLHttpRequest();
+
+    if (xhr.upload) {
+      xhr.upload.addEventListener('progress', progress);
+    }
     xhr.open(method, url, true);
+
     if (!isFormData) {
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     }
+
     xhr.onreadystatechange = () => {
       if (xhr.readyState === 4) {
         resolve({responseText: xhr.responseText, request: xhr});
       }
     };
+
     xhr.send(data);
   });
 
@@ -59,13 +66,14 @@ const parseResponse = ({responseText, request}) => {
 
 /**
  * Executes the public API request
- * @param  {String} method The HTTP method (GET, POST, PUT, DELETE)
- * @param  {String} url    The resource's url
- * @param  {Object} data   Data to send along with the request
+ * @param  {String}     method    The HTTP method (GET, POST, PUT, DELETE)
+ * @param  {String}     url       The resource's url
+ * @param  {Object}     data      Data to send along with the request
+ * @param  {Function=}  progress  upload progress handler
  * @return {Promise}
  */
-const sendAndFollow = (method, url, data) => {
-  const requestPromise = sendRequest(method, url, data);
+const sendAndFollow = (method, url, data, progress) => {
+  const requestPromise = sendRequest(method, url, data, progress);
   const followPromise = requestPromise.then(({responseText, request}) => {
     const response = parseResponse({responseText, request});
 
@@ -99,9 +107,10 @@ module.exports = {
    * @param  {String}            method HTTP method
    * @param  {String}            path   The resource's path
    * @param  {(Object|FormData)} params Parameters that will be sent
+   * @param  {Function=}         progress  optional upload progress handler
    * @return {Promise}
    */
-  request (method, path, params = {}) {
+  request (method, path, params = {}, progress = () => {}) {
     const oauthToken = config.get('oauth_token');
     const clientId = config.get('client_id');
     const additionalParams = {};
@@ -123,7 +132,7 @@ module.exports = {
     // in case of POST, PUT, DELETE -> prepare data
     if (method !== 'GET') {
       data = isFormData ? params : form.encode(params);
-      params = {};
+      params = { oauth_token: oauthToken };
     }
 
     // prepend `/` if not present
@@ -132,7 +141,7 @@ module.exports = {
     // construct request url
     url = `${config.get('baseURL')}${path}?${form.encode(params)}`;
 
-    return sendAndFollow(method, url, data);
+    return sendAndFollow(method, url, data, progress);
   },
 
   /**
@@ -163,10 +172,11 @@ module.exports = {
 
   /**
    * Uploads a track to SoundCloud
-   * @param  {Object} options      The track's properties
-   * @param  {String} title        The track's title
-   * @param  {Blob}   file         The track's data
-   * @param  {Blob=}  artwork_data The track's artwork
+   * @param  {Object}     options      The track's properties
+   * @param  {String}     title        The track's title
+   * @param  {Blob}       file         The track's data
+   * @param  {Blob=}      artwork_data The track's artwork
+   * @param  {Function=}  progress     Progress callback
    * @return {Promise}
    */
   upload (options = {}) {
@@ -197,7 +207,7 @@ module.exports = {
       formData.append(`track[${property}]`, value);
     });
 
-    return this.request('POST', '/tracks', formData);
+    return this.request('POST', '/tracks', formData, options.progress);
   },
 
   /**
