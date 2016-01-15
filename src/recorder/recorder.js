@@ -73,7 +73,14 @@ class Recorder {
 
     // stop the input media stream
     if (this.stream) {
-      this.stream.stop();
+      // stream.stop() has been deprecated
+      // https://developers.google.com/web/updates/2015/07/mediastream-deprecations?hl=en
+      if (this.stream.stop) {
+        this.stream.stop();
+      } else if (this.stream.getTracks) {
+        const stream = this.stream.getTracks()[0];
+        if (stream) stream.stop();
+      }
     }
   }
 
