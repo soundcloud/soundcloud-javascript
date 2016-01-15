@@ -117,6 +117,22 @@ describe('API methods', function () {
 
   });
 
+  it('should add the oauth_token to the query for non GET requests', function (done) {
+    SC.initialize({
+      client_id: 'YOUR_CLIENT_ID',
+      redirect_uri: 'http://localhost:8080',
+      oauth_token: 'SOME_OAUTH_TOKEN'
+    });
+
+    SC.put('tracks').then(function (track) {
+      done();
+    });
+
+    assert.match(this.requests[0].url, /oauth_token=SOME_OAUTH_TOKEN/, 'ouath token exists in URL');
+    assert.notMatch(this.requests[0].url, /client_id=YOUR_CLIENT_ID/, 'client id does not exist in URL');
+    this.requests[0].respond(200, { 'Content-Type': 'text/json' }, '{}');
+  });
+
   it('should make a POST when post is called', function (done) {
     SC.post('posting', {foo: 'bar'}).then(function (res) {
       assert.equal(this.requests[0].method, 'POST');
