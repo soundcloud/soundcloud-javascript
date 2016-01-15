@@ -45,7 +45,10 @@
               SC.upload({
                 asset_data: blob,
                 title: 'track' + Date.now(),
-                sharing: 'private'
+                sharing: 'private',
+                progress: (event) => {
+                  console.log('progress', event);
+                }
               }).then(function(track){
                 console.log('uploaded', track);
               }).catch(function(){
