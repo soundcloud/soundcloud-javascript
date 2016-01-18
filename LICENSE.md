@@ -1,4 +1,4 @@
-SoundCloud JavaScript SDK Copyright (c) 2015 SoundCloud, Ltd. (MIT License)
+SoundCloud JavaScript SDK Copyright (c) 2015-2016 SoundCloud, Ltd. (MIT License)
 Recorderjs Copyright (c) 2013 Matt Diamond (MIT License)
 
 Permission is hereby granted, free of charge, to any person obtaining
