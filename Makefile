@@ -16,9 +16,13 @@ NM_BIN         := $(PWD)/node_modules/.bin
 NODE_HOST      := https://nodejs.org/download/release
 NODE_SRC       := node-v$(NODE_VERSION).tar.gz
 
+NPM_REGISTRY := http://npm.dev.s-cloud.net
+
 export PATH := $(DESTBIN):$(NM_BIN):$(PATH)
 
-.PHONY: build
+.PHONY: setup build sc-vendor-libs test run publish dirs clean sc-vendor-libs
+
+setup: $(NODE_BIN)
 
 build: $(NODE_BIN)
 	$(NPM_BIN) install
@@ -29,6 +33,9 @@ test: build
 
 run: build
 	$(NPM_BIN) run serve
+
+run-with-watcher: build
+	$(NPM_BIN) run start
 
 publish: test
 	IS_NPM=1 $(NPM_BIN) run build
@@ -41,6 +48,16 @@ dirs:
 
 clean:
 	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* $(TMP) sdk.js
+
+vendor/audiomanager.js:
+	$(NPM_BIN) install @sc/audiomanager --registry=$(NPM_REGISTRY)
+	cp $(NODE_MODULES)/@sc/audiomanager/build/audiomanager.min.js vendor/audiomanager.js
+
+vendor/scaudio.js:
+	$(NPM_BIN) install @sc/scaudio --registry=$(NPM_REGISTRY)
+	cp $(NODE_MODULES)/@sc/scaudio/scaudio.min.js vendor/scaudio.js
+
+sc-vendor-libs: vendor/audiomanager.js vendor/scaudio.js
 
 ### nodejs
 $(TMP):
@@ -55,5 +72,6 @@ $(TMP)/$(NODE)/config.gypi: $(TMP)/$(NODE)/configure
 
 $(NODE_BIN): $(TMP)/$(NODE)/config.gypi
 	PORTABLE=1 make -j4 -C $(TMP)/$(NODE) install
+
 
 
