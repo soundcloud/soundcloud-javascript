@@ -2,7 +2,7 @@
 
 ## Setup
 
-- `make setup
+- `make setup`
 
 This will install the right node version locally. Please be patient. :)
 
