@@ -13,7 +13,7 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.js?$/,
-      exclude: /(node_modules)/,
+      exclude: /(node_modules|vendor)/,
       loader: 'babel-loader',
       query: {
         cacheDirectory: true
