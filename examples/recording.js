@@ -1,5 +1,5 @@
 SC.initialize({
-  client_id: 'YOUR_CLIENT_ID',
+  client_id: '41b8af7d6ab5d61d0e25ffa649da4e97',
   redirect_uri: 'http://localhost:8080'
 });
 
