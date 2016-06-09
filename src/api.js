@@ -146,7 +146,7 @@ module.exports = {
 
   /**
    * Fetches oEmbed information for the provided URL.
-   * Also embeds the response into an element if prodived in options
+   * Also embeds the response into an element if provided in options
    * @param  {String} trackUrl
    * @param  {Object} options
    * @return {Promise}
