@@ -216,6 +216,14 @@ module.exports = {
    * @return {Promise}
    */
   resolve (url) {
-    return this.request('GET', '/resolve', { url: url });
+    return this.request('GET', '/resolve', {
+      url: url,
+      /*
+       * Tell the API not to serve a redirect. This is to get around
+       * CORS issues on Safari 7+, which likes to send pre-flight requests
+       * before following redirects, which has problems.
+       */
+      _status_code_map: { 302: 200 }
+    });
   }
 };
