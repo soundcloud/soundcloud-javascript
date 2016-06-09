@@ -213,9 +213,10 @@ describe('API methods', function () {
     it('should resolve URLs properly', function(){
       var url = 'https://soundcloud.com/dj-perun/its-a-deep-bark';
       SC.resolve(url);
-      var requestUrl = this.requests[0].url;
-      var urlPart = decodeURIComponent(requestUrl.split('url=')[1]).split('&')[0];
+      var requestUrl = decodeURIComponent(this.requests[0].url);
+      var urlPart = requestUrl.split('url=')[1].split('&')[0];
       assert.ok(urlPart === url, 'The URL in the request should match the original URL');
+      assert.ok(requestUrl.indexOf('&_status_code_map[302]=200') >= 0, 'Should be mapping a 302 to a 200');
     });
   });
 });
