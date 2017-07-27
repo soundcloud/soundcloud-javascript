@@ -54,6 +54,16 @@
       var info = document.getElementById('info');
       var currentPlayer;
 
+      function play() {
+        if (currentPlayer) {
+          currentPlayer.play().then(function(){
+            console.log('Playback started.');
+          }).catch(function(e){
+            console.error('Playback rejected.', e);
+          });
+        }
+      }
+
       var streamTrack = function(track){
         return SC.stream('/tracks/' + track.id).then(function(player){
           title.innerText = track.title;
@@ -61,11 +71,10 @@
           if (currentPlayer) {
             currentPlayer.pause();
           }
-          currentPlayer = player;
-
-          player.play();
-        }).catch(function(){
-          console.log(arguments);
+          currentPlayer = window.player = player;
+          play();
+        }).catch(function(e){
+          console.error(e);
         });
       };
 
@@ -82,9 +91,7 @@
         }
       });
       document.getElementById('play').addEventListener('click', function(){
-        if (currentPlayer) {
-          currentPlayer.play();
-        }
+        play();
       });
     </script>
   </body>
