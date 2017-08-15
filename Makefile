@@ -45,7 +45,7 @@ dirs:
 	echo $(NPM_BIN)
 
 clean:
-	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* sdk.js $(DEP)
+	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* sdk.js $(DEP)/node
 
 vendor/audiomanager.js:
 	$(NPM_BIN) install @sc/audiomanager --registry=$(NPM_REGISTRY)
