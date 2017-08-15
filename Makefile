@@ -45,7 +45,7 @@ dirs:
 	echo $(NPM_BIN)
 
 clean:
-	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* sdk.js
+	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* sdk.js $(DEP)
 
 vendor/audiomanager.js:
 	$(NPM_BIN) install @sc/audiomanager --registry=$(NPM_REGISTRY)
@@ -70,4 +70,8 @@ $(NODE_BIN): $(DESTDIR)/usr/lib/$(NODE)/bin/node
 $(DESTDIR)/usr/lib/$(NODE)/bin/node: $(DEP)/node/$(OS)/$(NODE_VERSION).tar.gz
 	@mkdir -p $(@D)
 	tar xz -C $(DESTDIR)/usr/lib/$(NODE) --strip-components 1 -f $<
+	@touch $@
+
+$(DEP)/node/$(OS)/$(NODE_VERSION).tar.gz:
+	http_proxy=$(PROXY) curl -q --create-dirs --fail --location https://nodejs.org/dist/v$(NODE_VERSION)/node-v$(NODE_VERSION)-linux-x64.tar.xz --output $@
 	@touch $@
