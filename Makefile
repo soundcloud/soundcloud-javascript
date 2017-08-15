@@ -1,31 +1,28 @@
 OS             := $(shell uname)
 
 BUILD_DIR      := $(PWD)/build
-TMP            := $(PWD)/.tmp
-DEP            := $(TMP)/deps
 DESTDIR        := $(BUILD_DIR)/system/$(OS)
 DESTBIN        := $(DESTDIR)/bin
-
-NODE_VERSION   := 4.1.0
-NODE_MODULES   := $(PWD)/node_modules
-NODE           := nodejs-$(NODE_VERSION)
-NODE_BIN       := $(DESTBIN)/node
-NPM_BIN        := $(DESTBIN)/npm
 NM_BIN         := $(PWD)/node_modules/.bin
 
-NODE_HOST      := https://nodejs.org/download/release
-NODE_SRC       := node-v$(NODE_VERSION).tar.gz
+DEP := vendor
+
+NODE_VERSION := 6.11.1
+NODE         := nodejs-$(NODE_VERSION)
+NODE_BIN     := $(DESTBIN)/node
+NPM_BIN      := $(DESTBIN)/npm
 
 NPM_REGISTRY := http://npm.dev.s-cloud.net
 
 export PATH := $(DESTBIN):$(NM_BIN):$(PATH)
 
-.PHONY: setup build sc-vendor-libs test run publish dirs clean sc-vendor-libs
+.PHONY: build sc-vendor-libs test run publish dirs clean sc-vendor-libs
 
-setup: $(NODE_BIN)
-
-build: $(NODE_BIN)
+node_modules: $(NPM_BIN) package.json
 	$(NPM_BIN) install
+	@touch $@
+
+build: node_modules
 	$(NPM_BIN) run build
 
 test: build
@@ -44,10 +41,11 @@ publish: test
 dirs:
 	echo $(DESTDIR)
 	echo $(DESTBIN)
+	echo $(NODE_BIN)
 	echo $(NPM_BIN)
 
 clean:
-	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* $(TMP) sdk.js
+	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* sdk.js $(DEP)/node
 
 vendor/audiomanager.js:
 	$(NPM_BIN) install @sc/audiomanager --registry=$(NPM_REGISTRY)
@@ -59,19 +57,21 @@ vendor/scaudio.js:
 
 sc-vendor-libs: vendor/audiomanager.js vendor/scaudio.js
 
-### nodejs
-$(TMP):
-	mkdir -p $(TMP)
+$(NPM_BIN): $(DESTDIR)/usr/lib/$(NODE)/bin/node
+	@mkdir -p $(@D)
+	ln -sf $(DESTDIR)/usr/lib/$(NODE)/bin/npm $@
+	@touch $@
 
-$(TMP)/$(NODE)/configure:
-	mkdir -p $(TMP)/${NODE}
-	curl -L $(NODE_HOST)/v$(NODE_VERSION)/$(NODE_SRC) | tar xzv -C $(TMP)/$(NODE) --strip-components 1
+$(NODE_BIN): $(DESTDIR)/usr/lib/$(NODE)/bin/node
+	@mkdir -p $(@D)
+	ln -sf $< $@
+	@touch $@
 
-$(TMP)/$(NODE)/config.gypi: $(TMP)/$(NODE)/configure
-	cd $(TMP)/$(NODE); PKG_CONFIG_PATH=/usr/lib/pkgconfig/openssl.pc ./configure --prefix=$(DESTDIR)
+$(DESTDIR)/usr/lib/$(NODE)/bin/node: $(DEP)/node/$(OS)/$(NODE_VERSION).tar.gz
+	@mkdir -p $(@D)
+	tar xz -C $(DESTDIR)/usr/lib/$(NODE) --strip-components 1 -f $<
+	@touch $@
 
-$(NODE_BIN): $(TMP)/$(NODE)/config.gypi
-	PORTABLE=1 make -j4 -C $(TMP)/$(NODE) install
-
-
-
+$(DEP)/node/$(OS)/$(NODE_VERSION).tar.gz:
+	http_proxy=$(PROXY) curl -q --create-dirs --fail --location https://nodejs.org/dist/v$(NODE_VERSION)/node-v$(NODE_VERSION)-linux-x64.tar.xz --output $@
+	@touch $@
