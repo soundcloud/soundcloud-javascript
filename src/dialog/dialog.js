@@ -28,8 +28,8 @@ class Dialog {
     this.options = options;
     // will be used to identify the correct popup window
     this.options.state = this.id;
-    this.width = 456;
-    this.height = 510;
+    this.width = 420;
+    this.height = 670;
 
     this.deferred = deferred();
   }
