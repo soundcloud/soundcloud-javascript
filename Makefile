@@ -9,18 +9,19 @@ DEP := vendor
 
 NODE_VERSION := 6.11.1
 NODE         := nodejs-$(NODE_VERSION)
-NODE_BIN     := $(DESTBIN)/node
 NPM_BIN      := $(DESTBIN)/npm
 
 NPM_REGISTRY := http://npm.dev.s-cloud.net
 
 export PATH := $(DESTBIN):$(NM_BIN):$(PATH)
 
-.PHONY: build sc-vendor-libs test run publish dirs clean sc-vendor-libs
+.PHONY: setup build sc-vendor-libs test run publish dirs clean
 
 node_modules: $(NPM_BIN) package.json
 	$(NPM_BIN) install
 	@touch $@
+
+setup: $(NPM_BIN)
 
 build: node_modules
 	$(NPM_BIN) run build
@@ -41,30 +42,24 @@ publish: test
 dirs:
 	echo $(DESTDIR)
 	echo $(DESTBIN)
-	echo $(NODE_BIN)
 	echo $(NPM_BIN)
 
 clean:
-	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* sdk.js $(DEP)/node
+	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* $(TMP) $(DEP)/node sdk.js vendor/playback/playback.js
 
-vendor/audiomanager.js:
-	$(NPM_BIN) install @sc/audiomanager --registry=$(NPM_REGISTRY)
-	cp $(NODE_MODULES)/@sc/audiomanager/build/audiomanager.min.js vendor/audiomanager.js
-
-vendor/scaudio.js:
-	$(NPM_BIN) install @sc/scaudio --registry=$(NPM_REGISTRY)
-	cp $(NODE_MODULES)/@sc/scaudio/scaudio.min.js vendor/scaudio.js
-
-sc-vendor-libs: vendor/audiomanager.js vendor/scaudio.js
+sc-vendor-libs: node_modules
+	$(NPM_BIN) install --registry=$(NPM_REGISTRY) \
+		@sc/scaudio \
+		@sc/scaudio-public-api-stream-url-retriever \
+		@sc/maestro-core \
+		@sc/maestro-loaders \
+		@sc/maestro-html5-player \
+		@sc/maestro-hls-mse-player
+	$(NPM_BIN) run buildPlayback
 
 $(NPM_BIN): $(DESTDIR)/usr/lib/$(NODE)/bin/node
 	@mkdir -p $(@D)
 	ln -sf $(DESTDIR)/usr/lib/$(NODE)/bin/npm $@
-	@touch $@
-
-$(NODE_BIN): $(DESTDIR)/usr/lib/$(NODE)/bin/node
-	@mkdir -p $(@D)
-	ln -sf $< $@
 	@touch $@
 
 $(DESTDIR)/usr/lib/$(NODE)/bin/node: $(DEP)/node/$(OS)/$(NODE_VERSION).tar.gz

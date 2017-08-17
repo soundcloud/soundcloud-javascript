@@ -38,6 +38,6 @@ describe('SDK streaming', function () {
     });
     this.requests[0].respond(200,
                              { 'Content-Type': 'text/json' },
-                             '{"id": "123", "duration": 23}');
+                             '{"id": 123, "duration": 23}');
   });
 });
