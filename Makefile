@@ -11,8 +11,6 @@ NODE_VERSION := 6.11.1
 NODE         := nodejs-$(NODE_VERSION)
 NPM_BIN      := $(DESTBIN)/npm
 
-NPM_REGISTRY := http://npm.dev.s-cloud.net
-
 export PATH := $(DESTBIN):$(NM_BIN):$(PATH)
 
 .PHONY: setup build sc-vendor-libs test run publish dirs clean
@@ -48,7 +46,7 @@ clean:
 	rm -rf $(NODE_MODULES) $(BUILD_DIR)/* $(TMP) $(DEP)/node sdk.js vendor/playback/playback.js
 
 sc-vendor-libs: node_modules
-	$(NPM_BIN) install --registry=$(NPM_REGISTRY) \
+	$(NPM_BIN) install \
 		@sc/scaudio \
 		@sc/scaudio-public-api-stream-url-retriever \
 		@sc/maestro-core \
