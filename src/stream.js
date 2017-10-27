@@ -66,3 +66,11 @@ module.exports = (trackPath, secretToken) => {
     return playerApi(player);
   });
 };
+
+/**
+ * Call this from a user interaction, before creating a player, to ensure that playback
+ * can start even if `play()` is not from a user interaction.
+ */
+module.exports.activateAudioElement = () => {
+  SCAudio.activateAudioElement();
+};
