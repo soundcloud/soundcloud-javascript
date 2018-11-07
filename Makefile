@@ -51,8 +51,8 @@ sc-vendor-libs: node_modules
 		@sc/scaudio-public-api-stream-url-retriever \
 		@sc/maestro-core \
 		@sc/maestro-loaders \
-		@sc/maestro-html5-player \
-		@sc/maestro-hls-mse-player
+		@sc/scaudio-controller-html5-player \
+		@sc/scaudio-controller-hls-mse-player
 	$(NPM_BIN) run buildPlayback
 
 $(NPM_BIN): $(DESTDIR)/usr/lib/$(NODE)/bin/node
