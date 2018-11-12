@@ -1,6 +1,6 @@
 const BackboneEvents = require('backbone-events-standalone');
 const { errors: { PlayerFatalError }, State } = require('../vendor/playback/playback').MaestroCore;
-const { errors: { GeoBlockedError, NoStreamsError, TimedOutError, NotSupportedError } } = require('../vendor/playback/playback').SCAudio;
+const { errors: { NoStreamsError, NotSupportedError } } = require('../vendor/playback/playback').SCAudio;
 
 const TIMEUPDATE_INTERVAL = 1000 / 60;
 
@@ -57,12 +57,8 @@ module.exports = function(scaudioPlayer) {
   scaudioPlayer.onLoadEnd.subscribe(() => playerApi.trigger('buffering_end'));
   scaudioPlayer.onEnded.subscribe(() => playerApi.trigger('finish'));
   scaudioPlayer.onError.subscribe((error) => {
-    if (error instanceof GeoBlockedError) {
-      playerApi.trigger('geo_blocked');
-    } else if (error instanceof NoStreamsError) {
+    if (error instanceof NoStreamsError) {
       playerApi.trigger('no_streams');
-    } else if (error instanceof TimedOutError) {
-      playerApi.trigger('no_connection');
     } else if (error instanceof NotSupportedError) {
       playerApi.trigger('no_protocol');
     } else if (error instanceof PlayerFatalError) {

@@ -2,12 +2,14 @@ const api = require('./api');
 const config = require('./config');
 const playerApi = require('./player-api');
 const SCAudio = require('../vendor/playback/playback').SCAudio;
+const maestroLogger = require('../vendor/playback/playback').MaestroCore.logger;
 const StreamUrlRetriever = require('../vendor/playback/playback').SCAudioPublicApiStreamURLRetriever.StreamUrlRetriever;
-const MaestroHTML5Player = require('../vendor/playback/playback').MaestroHTML5Player.HTML5Player;
-const MaestroHLSMSEPlayer = require('../vendor/playback/playback').MaestroHLSMSEPlayer.HLSMSEPlayer;
+const MediaElementManager = require('../vendor/playback/playback').SCAudioControllerHTML5Player.MediaElementManager;
+const HTML5PlayerController = require('../vendor/playback/playback').SCAudioControllerHTML5Player.HTML5PlayerController;
+const HLSMSEPlayerController = require('../vendor/playback/playback').SCAudioControllerHLSMSEPlayer.HLSMSEPlayerController;
 const stringLoader = require('../vendor/playback/playback').MaestroLoaders.stringLoader;
 
-const SNIPPET_FADEOUT = 3000; // ms
+const mediaElementManager = new MediaElementManager('audio', maestroLogger.noOpLogger);
 
 /**
  * Fetches track info and instantiates a player for the track
@@ -42,11 +44,18 @@ module.exports = (trackPath, secretToken) => {
       loader: stringLoader
     });
 
-    const player = SCAudio.buildPlayer({
-      playerClasses: [ MaestroHTML5Player, MaestroHLSMSEPlayer ],
+    const player = new SCAudio.Player({
+      controllers: [
+        new HLSMSEPlayerController(mediaElementManager),
+        new HTML5PlayerController(mediaElementManager)
+      ],
       streamUrlRetriever,
-      fadeOutDuration: track.policy === 'SNIP' ? SNIPPET_FADEOUT : 0
+      getURLOpts: { preview: track.policy === 'SNIP' },
+      streamUrlsExpire: true,
+      mediaSessionEnabled: true,
+      logger: maestroLogger.noOpLogger
     });
+
     player.onPlay.subscribe(() => {
       if (!playRegistered) {
         playRegistered = true;
@@ -72,5 +81,5 @@ module.exports = (trackPath, secretToken) => {
  * can start even if `play()` is not from a user interaction.
  */
 module.exports.activateAudioElement = () => {
-  SCAudio.activateAudioElement();
+  mediaElementManager.activate();
 };
