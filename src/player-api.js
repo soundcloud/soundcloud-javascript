@@ -23,6 +23,7 @@ module.exports = function(scaudioPlayer) {
     let timerId = 0;
     let previousPosition = null;
     scaudioPlayer.onChange.subscribe(({ playing, seeking, dead }) => {
+      if (!window) return;
       if (dead) {
         window.clearTimeout(timerId);
       } else if (playing !== undefined || seeking !== undefined) {
@@ -30,6 +31,7 @@ module.exports = function(scaudioPlayer) {
       }
     });
     function doEmit() {
+      if (!window) return;
       window.clearTimeout(timerId);
       if (scaudioPlayer.isPlaying() && !scaudioPlayer.isEnded()) {
         timerId = window.setTimeout(doEmit, TIMEUPDATE_INTERVAL);
