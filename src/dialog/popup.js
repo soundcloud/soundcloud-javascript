@@ -10,6 +10,8 @@ module.exports = {
     const options = {};
     let stringOptions;
 
+    if (!window) return;
+
     options.location = 1;
     options.width = width;
     options.height = height;
