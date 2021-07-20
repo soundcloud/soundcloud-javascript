@@ -23,8 +23,8 @@ module.exports = function (options = {}) {
   const dialogOptions = {
     client_id: options.client_id || config.get('client_id'),
     redirect_uri: options.redirect_uri || config.get('redirect_uri'),
-    response_type: 'code_and_token',
-    scope: options.scope || 'non-expiring',
+    response_type: 'code',
+    scope: options.scope || '',
     display: 'popup'
   };
 

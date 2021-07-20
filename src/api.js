@@ -6,12 +6,18 @@ const sendRequest = (method, url, data, progress) => {
   let xhr;
   const requestPromise = new Promise((resolve) => {
     const isFormData = global.FormData && (data instanceof FormData);
+    const oauthToken = config.get('oauth_token');
     xhr = new XMLHttpRequest();
 
     if (xhr.upload) {
       xhr.upload.addEventListener('progress', progress);
     }
     xhr.open(method, url, true);
+
+    //add Authorization header
+    if (oauthToken) {
+      xhr.setRequestHeader('Authorization', 'OAuth ' + oauth_token);
+    }
 
     if (!isFormData) {
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -91,16 +97,6 @@ const sendAndFollow = (method, url, data, progress) => {
   return followPromise;
 };
 
-const addParams = (params, additionalParams, isFormData) => {
-  Object.keys(additionalParams).forEach((key) => {
-    if (isFormData) {
-      params.append(key, additionalParams[key]);
-    } else {
-      params[key] = additionalParams[key];
-    }
-  });
-};
-
 module.exports = {
   /**
    * Executes the public API request
@@ -111,30 +107,13 @@ module.exports = {
    * @return {Promise}
    */
   request (method, path, params = {}, progress = () => {}) {
-    const oauthToken = config.get('oauth_token');
-    const clientId = config.get('client_id');
-    const additionalParams = {};
     const isFormData = global.FormData && (params instanceof FormData);
     let data, url;
-
-    additionalParams.format = 'json';
-
-    // set the oauth_token or, in case none has been issued yet, the client_id
-    if (oauthToken) {
-      additionalParams.oauth_token = oauthToken;
-    } else {
-      additionalParams.client_id = clientId;
-    }
-
-    // add the additional params to the received params
-    addParams(params, additionalParams, isFormData);
 
     // in case of POST, PUT, DELETE -> prepare data
     if (method !== 'GET') {
       data = isFormData ? params : form.encode(params);
-      params = { oauth_token: oauthToken };
     }
-
     // prepend `/` if not present
     path = path[0] !== '/' ? `/${path}` : path;
 

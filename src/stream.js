@@ -22,9 +22,9 @@ module.exports = (trackPath, secretToken) => {
 
   return api.request('GET', trackPath, options).then((track) => {
     function registerPlay() {
-      let registerEndpoint = `${baseURL}/tracks/${encodeURIComponent(track.id)}/plays?client_id=${encodeURIComponent(clientId)}`;
+      let registerEndpoint = `${baseURL}/tracks/${encodeURIComponent(track.id)}/plays`;
       if (secretToken) {
-        registerEndpoint += `&secret_token=${encodeURIComponent(secretToken)}`;
+        registerEndpoint += `?secret_token=${encodeURIComponent(secretToken)}`;
       }
       const xhr = new XMLHttpRequest();
       xhr.open('POST', registerEndpoint, true);
@@ -32,12 +32,10 @@ module.exports = (trackPath, secretToken) => {
     }
 
     const baseURL = config.get('baseURL')
-    const clientId = config.get('client_id');
     const oauthToken = config.get('oauth_token');
 
     let playRegistered = false;
     const streamUrlRetriever = new StreamUrlRetriever({
-      clientId,
       secretToken,
       trackId: track.id,
       requestAuthorization: oauthToken ? 'OAuth ' + oauthToken : null,
