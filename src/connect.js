@@ -14,8 +14,9 @@ const setOauthToken = (options) => {
 
 module.exports = function (options = {}) {
   // resolve immediately when oauth_token is set
-  const oauth_token = config.get('oauth_token');
+  const oauth_token = options.oauth_token || config.get('oauth_token');
   if (oauth_token) {
+    setOauthToken(options);
     return new Promise((resolve) => { resolve({oauth_token}); });
   }
   // set up the options for the dialog
