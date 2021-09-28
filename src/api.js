@@ -2,7 +2,7 @@ const config = require('./config');
 const form = require('form-urlencoded');
 const Promise = require('es6-promise').Promise;
 
-const sendRequest = (method, url, data, progress) => {
+const sendRequest = (method, url, data, progress, token) => {
   let xhr;
   const requestPromise = new Promise((resolve) => {
     const isFormData = global.FormData && (data instanceof FormData);
@@ -15,6 +15,10 @@ const sendRequest = (method, url, data, progress) => {
 
     if (!isFormData) {
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
+
+    if (token) {
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     }
 
     xhr.onreadystatechange = () => {
@@ -72,13 +76,13 @@ const parseResponse = ({responseText, request}) => {
  * @param  {Function=}  progress  upload progress handler
  * @return {Promise}
  */
-const sendAndFollow = (method, url, data, progress) => {
-  const requestPromise = sendRequest(method, url, data, progress);
+const sendAndFollow = (method, url, data, progress, token) => {
+  const requestPromise = sendRequest(method, url, data, progress, token);
   const followPromise = requestPromise.then(({responseText, request}) => {
     const response = parseResponse({responseText, request});
 
     if (response.json && response.json.status === '302 - Found') {
-      return sendAndFollow('GET', response.json.location, null);
+      return sendAndFollow('GET', response.json.location, null, token);
     } else {
       if (request.status !== 200 && response.error) {
         throw response.error;
@@ -119,10 +123,8 @@ module.exports = {
 
     additionalParams.format = 'json';
 
-    // set the oauth_token or, in case none has been issued yet, the client_id
-    if (oauthToken) {
-      additionalParams.oauth_token = oauthToken;
-    } else {
+    // in case not token has been issued yet, set the client_id
+    if (!oauthToken) {
       additionalParams.client_id = clientId;
     }
 
@@ -141,7 +143,7 @@ module.exports = {
     // construct request url
     url = `${config.get('baseURL')}${path}?${form.encode(params)}`;
 
-    return sendAndFollow(method, url, data, progress);
+    return sendAndFollow(method, url, data, progress, oauthToken);
   },
 
   /**
