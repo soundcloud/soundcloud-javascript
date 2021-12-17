@@ -18,7 +18,7 @@ const sendRequest = (method, url, data, progress, token) => {
     }
 
     if (token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.setRequestHeader('Authorization', `OAuth ${token}`);
     }
 
     xhr.onreadystatechange = () => {
