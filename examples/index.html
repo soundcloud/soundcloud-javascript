@@ -30,7 +30,6 @@
       document.getElementById('connect').addEventListener('click', connect);
 
       var oembedElement = document.getElementById('oembed');
-      SC.oEmbed('https://soundcloud.com/forss/soulhack', {element: oembedElement}).then(function(result){
         console.log('oembed', result);
       }).catch(function(err){
         console.log('oembed err', err);
@@ -65,7 +64,6 @@
         window.player = player;
       });
 
-      SC.resolve('https://soundcloud.com/forss/soulhack').then(function(track){
         console.log('resolve', track);
       });
 

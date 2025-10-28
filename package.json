@@ -1,11 +1,9 @@
 {
-  "name": "soundcloud",
   "version": "3.3.2",
   "description": "",
   "main": "sdk.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/soundcloud/soundcloud-javascript.git"
   },
   "scripts": {
     "test": "webpack && karma start --single-run",
