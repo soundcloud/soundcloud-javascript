@@ -66,7 +66,7 @@ module.exports = global.SC = {
     return stream(trackPath, secretToken);
   },
 
-  connectCallback () {
-    callback.notifyDialog(this.location);
+  connectCallback (location) {
+    callback.notifyDialog(location || window.location);
   }
 };
