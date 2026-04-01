@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "backbone-events-standalone": "^0.2.7",
-    "es6-promise": "^2.3.0",
+    "es6-promise": "^4.0.0",
     "form-urlencoded": "^0.1.4",
     "node-static": "^0.7.7",
     "query-string": "^2.3.0"
