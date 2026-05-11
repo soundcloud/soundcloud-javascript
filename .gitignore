@@ -5,3 +5,4 @@ build
 .tmp
 /vendor/node
 /*.worker.js
+/.idea
