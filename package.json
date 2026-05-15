@@ -32,7 +32,7 @@
     "node-libs-browser": "^0.5.2",
     "sinon": "^1.15.4",
     "webpack": "^1.10.1",
-    "webpack-dev-server": "^1.10.1",
+    "webpack-dev-server": "^5.2.1",
     "worker-loader": "^0.6.0"
   },
   "dependencies": {
