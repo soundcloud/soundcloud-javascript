@@ -21,7 +21,7 @@
     "babel-loader": "^5.3.0",
     "chai": "^3.2.0",
     "eslint": "^1.0.0-rc-1",
-    "karma": "^0.13.3",
+    "karma": "^6.3.16",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.2.0",
     "karma-firefox-launcher": "^0.1.6",
